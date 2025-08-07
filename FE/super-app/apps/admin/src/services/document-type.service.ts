@@ -7,6 +7,6 @@ import { BaseService } from '@super-app/shared';
 })
 export class DocumentTypeService extends BaseService {
   constructor() {
-    super('http://localhost:5001/dmLoaiVanBan');
+    super('https://ocr-app-api.csharpp.com/dmLoaiVanBan');
   }
 }

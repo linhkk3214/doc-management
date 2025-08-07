@@ -7,18 +7,18 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class DocumentService extends BaseService {
-  private readonly baseUrl = 'http://localhost:5001/documents';
+  private readonly baseUrl = 'https://ocr-app-api.csharpp.com/documents';
 
   constructor() {
-    super('http://localhost:5001/documents');
+    super('https://ocr-app-api.csharpp.com/documents');
   }
 
   /**
    * Get file blob for viewing (opens file in browser)
    */
   viewFile(documentId: string): Observable<Blob> {
-    return this._http.get(`${this.baseUrl}/${documentId}/file`, { 
-      responseType: 'blob' 
+    return this._http.get(`${this.baseUrl}/${documentId}/file`, {
+      responseType: 'blob'
     });
   }
 
@@ -33,8 +33,8 @@ export class DocumentService extends BaseService {
    * Download file (forces download with filename)
    */
   downloadFile(documentId: string): Observable<Blob> {
-    return this._http.get(`${this.baseUrl}/${documentId}/download`, { 
-      responseType: 'blob' 
+    return this._http.get(`${this.baseUrl}/${documentId}/download`, {
+      responseType: 'blob'
     });
   }
 

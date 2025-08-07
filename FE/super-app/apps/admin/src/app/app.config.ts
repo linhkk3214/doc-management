@@ -32,7 +32,7 @@ export const appConfig: ApplicationConfig = {
       const httpLink = inject(HttpLink);
 
       return {
-        link: httpLink.create({ uri: 'http://localhost:5001/graphql' }),
+        link: httpLink.create({ uri: 'https://ocr-app-api.csharpp.com/graphql' }),
         cache: new InMemoryCache(),
       };
     }),

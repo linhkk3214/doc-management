@@ -31,9 +31,9 @@ export interface ExcelImportResult {
 })
 export class ExcelImportService {
   private http = inject(HttpClient);
-  private baseUrl = 'http://localhost:5001/documents/import-excel';
+  private baseUrl = 'https://ocr-app-api.csharpp.com/documents/import-excel';
 
-  constructor() {}
+  constructor() { }
 
   /**
    * Upload và import file Excel

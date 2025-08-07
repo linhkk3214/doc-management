@@ -7,6 +7,6 @@ import { BaseService } from '@super-app/shared';
 })
 export class DMPhongService extends BaseService {
   constructor() {
-    super('http://localhost:5001/DMPhong');
+    super('https://ocr-app-api.csharpp.com/DMPhong');
   }
 }

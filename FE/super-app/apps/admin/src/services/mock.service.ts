@@ -8,7 +8,7 @@ import { delay, Observable, of } from 'rxjs';
 })
 export class MockDataService extends BaseService {
   constructor() {
-    super('http://localhost:5001/cities');
+    super('https://ocr-app-api.csharpp.com/cities');
   }
   static cities = [
     { "id": "A714F782-0F29-447F-92BF-00A8D23BC7B7", "code": "CB", "name": "Cao Bằng", "type": 2, "capital": 0 },

@@ -13,37 +13,37 @@ interface User {
     providedIn: 'root'
 })
 export class StreamingService {
-    private readonly API_URL = 'http://localhost:5001/cities/stream2';
+    private readonly API_URL = 'https://ocr-app-api.csharpp.com/cities/stream2';
     constructor(private http: HttpClient) { }
 
     getStream(): Observable<User> {
         return new Observable<User>(observer => {
-          const url = this.API_URL; // URL của API stream
-          const eventSource = new EventSource(url);
-    
-          eventSource.onmessage = (event: MessageEvent) => {
-            try {
-              const user: User = JSON.parse(event.data); // Parse dữ liệu JSON từ server
-              observer.next(user); // Gửi đối tượng User cho subscriber
-            } catch (error) {
-              console.error('Lỗi khi parse dữ liệu JSON:', error);
-            }
-          };
-    
-          eventSource.onerror = (error) => {
-            observer.error(error); // Nếu có lỗi xảy ra, gửi lỗi cho subscriber
-          };
-    
-          // Khi Observable bị hủy, đóng EventSource
-          return () => {
-            eventSource.close();
-          };
+            const url = this.API_URL; // URL của API stream
+            const eventSource = new EventSource(url);
+
+            eventSource.onmessage = (event: MessageEvent) => {
+                try {
+                    const user: User = JSON.parse(event.data); // Parse dữ liệu JSON từ server
+                    observer.next(user); // Gửi đối tượng User cho subscriber
+                } catch (error) {
+                    console.error('Lỗi khi parse dữ liệu JSON:', error);
+                }
+            };
+
+            eventSource.onerror = (error) => {
+                observer.error(error); // Nếu có lỗi xảy ra, gửi lỗi cho subscriber
+            };
+
+            // Khi Observable bị hủy, đóng EventSource
+            return () => {
+                eventSource.close();
+            };
         });
-      }
+    }
 
     getStream2(): Observable<User> {
         return new Observable<User>(observer => {
-            const url = 'http://localhost:5001/cities/stream'; // URL của API stream
+            const url = 'https://ocr-app-api.csharpp.com/cities/stream'; // URL của API stream
             const options = {
                 headers: new HttpHeaders({
                     'Accept': 'application/json' // Yêu cầu dữ liệu dưới dạng JSON
@@ -72,7 +72,7 @@ export class StreamingService {
 
     getStream3(): Observable<User> {
         return new Observable<User>(observer => {
-            const url = 'http://localhost:5001/cities/stream'; // URL của API stream
+            const url = 'https://ocr-app-api.csharpp.com/cities/stream'; // URL của API stream
 
             // Sử dụng fetch API để stream dữ liệu
             fetch(url)

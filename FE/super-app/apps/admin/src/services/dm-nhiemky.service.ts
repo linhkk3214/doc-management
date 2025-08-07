@@ -7,6 +7,6 @@ import { BaseService } from '@super-app/shared';
 })
 export class DMNhiemKyService extends BaseService {
   constructor() {
-    super('http://localhost:5001/DMNhiemKy');
+    super('https://ocr-app-api.csharpp.com/DMNhiemKy');
   }
 }
