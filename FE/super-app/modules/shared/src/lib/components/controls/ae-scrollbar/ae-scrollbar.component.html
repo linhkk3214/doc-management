@@ -1,0 +1,6 @@
+<ng-scrollbar #scrollbar visibility="hover" [reachedOffset]="1" (reachedBottom)="onReachedBottom()"
+    (reachedTop)="onReachedTop()">
+    <div>
+        <ng-content></ng-content>
+    </div>
+</ng-scrollbar>

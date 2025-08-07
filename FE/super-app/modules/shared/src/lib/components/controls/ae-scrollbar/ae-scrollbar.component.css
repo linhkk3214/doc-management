@@ -1,0 +1,9 @@
+ng-scrollbar {
+    max-height: 100%;
+    --scrollbar-size: 6px;
+    --scrollbar-hover-size: 10px;
+    --scrollbar-track-color: rgba(0, 0, 0, .2);
+    --scrollbar-track-hover-color: rgba(0, 0, 0, .2);
+    --scrollbar-thumb-hover-color: rgb(145 145 145);
+    --scrollbar-border-radius: 4px;
+}

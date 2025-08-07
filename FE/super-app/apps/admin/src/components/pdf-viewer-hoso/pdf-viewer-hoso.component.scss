@@ -1,0 +1,290 @@
+.pdf-viewer-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0;
+  gap: 16px;
+}
+
+.document-info {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.document-title {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.document-symbol {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.toolbar-controls {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  
+  .pdf-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    
+    .page-info {
+      font-size: 13px;
+      color: #555;
+      min-width: 80px;
+      text-align: center;
+    }
+    
+    .zoom-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: 16px;
+      
+      .zoom-level {
+        font-size: 12px;
+        color: #555;
+        min-width: 40px;
+        text-align: center;
+      }
+    }
+  }
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  i {
+    font-size: 11px;
+  }
+}
+
+.btn-sm {
+  padding: 4px 8px;
+  font-size: 11px;
+  
+  i {
+    font-size: 10px;
+  }
+}
+
+.btn-primary {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+
+  &:hover:not(:disabled) {
+    background: #0056b3;
+    border-color: #0056b3;
+  }
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+  border-color: #6c757d;
+
+  &:hover:not(:disabled) {
+    background: #545b62;
+    border-color: #545b62;
+  }
+}
+
+.btn-info {
+  background: #17a2b8;
+  color: white;
+  border-color: #17a2b8;
+
+  &:hover:not(:disabled) {
+    background: #138496;
+    border-color: #138496;
+  }
+}
+
+.loading-container,
+.error-container,
+.no-document {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+.loading-spinner {
+  text-align: center;
+  color: #666;
+
+  i {
+    font-size: 24px;
+    margin-bottom: 12px;
+    display: block;
+    color: #007bff;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+.error-content {
+  text-align: center;
+  max-width: 400px;
+
+  i {
+    font-size: 48px;
+    color: #dc3545;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  h4 {
+    margin: 0 0 8px 0;
+    color: #333;
+    font-size: 16px;
+  }
+
+  p {
+    margin: 0 0 20px 0;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
+
+.no-document {
+  color: #999;
+  font-style: italic;
+
+  i {
+    font-size: 48px;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+.pdf-viewer {
+  flex: 1;
+  display: flex;
+  position: relative;
+  overflow: auto;
+  justify-content: center;
+  align-items: flex-start;
+  background: #f5f5f5;
+
+  .canvas-container {
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    max-width: 100%;
+    max-height: 100%;
+
+    .pdf-canvas {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+  }
+}
+
+/* Responsive design */
+@media (max-width: 968px) {
+  .toolbar {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .toolbar-controls {
+    order: 2;
+    
+    .pdf-controls {
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      
+      .zoom-controls {
+        margin-left: 0;
+      }
+    }
+  }
+
+  .toolbar-actions {
+    order: 3;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .document-info {
+    order: 1;
+    text-align: center;
+  }
+
+  .document-title {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+  }
+}
+
+@media (max-width: 576px) {
+  .toolbar-controls .pdf-controls {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    
+    .zoom-controls {
+      margin-left: 0;
+    }
+  }
+}

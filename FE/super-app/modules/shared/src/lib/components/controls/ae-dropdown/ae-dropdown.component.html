@@ -1,0 +1,13 @@
+@if (multiple())
+{
+<p-multiselect #multiDropdown [options]="schema().options" [(ngModel)]="_value" [filter]="true"
+    [optionLabel]="schema().optionLabel" [optionValue]="schema().optionValue" value appendTo="body"
+    [placeholder]="schema().placeholder" styleClass="w-full h-full" (onFocus)="handleFocus()" (onBlur)="handleBlur()"
+    (onPanelShow)="handlePanelShow()" (onPanelHide)="handlePanelHide()" (onChange)="handleChanged()" />
+}
+@else {
+<p-select #dropdown [options]="schema().options" [(ngModel)]="_value" [filter]="true" [showClear]="true"
+    [optionLabel]="schema().optionLabel" [optionValue]="schema().optionValue" value appendTo="body"
+    [placeholder]="schema().placeholder" styleClass="w-full h-full" (onFocus)="handleFocus()" (onBlur)="handleBlur()"
+    (onShow)="handleShow()" (onHide)="handleHide()" (onChange)="handleChanged()" />
+}

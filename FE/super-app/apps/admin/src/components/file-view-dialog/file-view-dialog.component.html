@@ -1,0 +1,18 @@
+<div class="dialog-backdrop" *ngIf="visible" (click)="onBackdropClick($event)">
+  <div class="dialog-container">
+    <div class="dialog-header">
+      <h2 class="dialog-title">Xem tài liệu</h2>
+      <button class="close-btn" (click)="close()" title="Đóng">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="dialog-content">
+      <app-pdf-viewer 
+        [document]="document"
+        [height]="'70vh'"
+        [showToolbar]="true">
+      </app-pdf-viewer>
+    </div>
+  </div>
+</div>

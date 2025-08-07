@@ -1,0 +1,35 @@
+### Test File Viewing API Endpoints
+
+### 1. Get Document Data
+GET http://localhost:5001/documents/GetData
+Content-Type: application/json
+
+{
+  "pageNumber": 1,
+  "pageSize": 10
+}
+
+###
+
+### 2. View File by Document ID (replace {id} with actual document ID)
+GET http://localhost:5001/documents/{id}/file
+Accept: application/pdf
+
+###
+
+### 3. Download File by Document ID (replace {id} with actual document ID)
+GET http://localhost:5001/documents/{id}/download
+Accept: application/octet-stream
+
+###
+
+### Example with a sample document ID (you need to replace with actual ID from your database)
+GET http://localhost:5001/documents/12345678-1234-1234-1234-123456789abc/file
+Accept: application/pdf
+
+###
+
+GET http://localhost:5001/documents/12345678-1234-1234-1234-123456789abc/download
+Accept: application/octet-stream
+
+###

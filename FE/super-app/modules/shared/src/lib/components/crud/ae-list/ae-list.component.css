@@ -1,0 +1,59 @@
+::ng-deep .filter-container input {
+    width: 100%;
+    flex: 1 1;
+}
+
+::ng-deep ae-dropdown {
+    font-weight: normal;
+}
+
+::ng-deep .ae-list .p-button-icon-only {
+    --p-button-padding-x: 0.5rem;
+    --p-button-padding-y: 0.25rem;
+    --p-button-icon-only-width: 1.8rem;
+    height: var(--p-button-icon-only-width);
+}
+
+.sort-icon {
+    --p-icon-size: 0.8rem;
+}
+
+.filter-container {
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
+
+    .filter-control {
+        flex: 1 1;
+        display: flex;
+        gap: 0.5em;
+        align-items: center;
+        overflow: hidden;
+        white-space: nowrap;
+
+        &.center {
+            justify-content: center;
+        }
+    }
+
+    .btn-filter {
+        cursor: pointer;
+        color: var(--p-button-text-secondary-color);
+    }
+
+    &.expanded-filter-box {
+        position: fixed;
+        width: 250px;
+        z-index: 1;
+        left: var(--left, 0px);
+        top: var(--top, 0px);
+        background: var(--p-content-background, white);
+        padding-right: 0.75rem;
+    }
+
+    &:not(.no-padding) {
+        padding: var(--p-datatable-header-cell-padding);
+    }
+}

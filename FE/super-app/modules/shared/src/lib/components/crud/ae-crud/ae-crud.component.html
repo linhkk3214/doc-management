@@ -1,0 +1,24 @@
+@if(settings)
+{
+<div class="p-2 h-full">
+    <ae-list [columns]="settings.schemas" [listData]="dataSourceSignal()" [settings]="settingsSignal()"
+        [pageSize]="settings.pageSetting.pageSize" [loading]="loading()"
+        [offline]="settingsSignal().baseService == null" (execute)="handleListEvent($event)"></ae-list>
+</div>
+@if (showForm){
+<p-dialog [(visible)]="showForm" [modal]="true" [style]="{ width: '700px', height: '550px' }" [focusOnShow]="false">
+    <ng-template #header>
+        <div>Sửa bản ghi</div>
+    </ng-template>
+    <ae-scrollbar>
+        <ae-form [schemas]="settings.schemas" [data]="selectedRowItem">
+        </ae-form>
+    </ae-scrollbar>
+    <ng-template #footer>
+        <p-button label="Cancel" icon="pi pi-times" [text]="true" variant="text" severity="secondary"
+            (onClick)="showForm = false" />
+        <p-button label="Save" icon="pi pi-check" [text]="true" [autofocus]="false" severity="success" />
+    </ng-template>
+</p-dialog>
+}
+}

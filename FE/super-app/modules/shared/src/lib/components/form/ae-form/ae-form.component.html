@@ -1,0 +1,73 @@
+<div class="grid grid-cols-12 gap-4 p-2" [class.compact-layout]="compactLayout">
+    <ng-container [ngTemplateOutlet]="controls"
+        [ngTemplateOutletContext]="{$implicit: schemasValComputed(), model: modelValue}"></ng-container>
+</div>
+<ng-template #controls let-schemas let-model="model">
+    @for (schema of schemas; track schema.field) {
+    <ng-container [ngTemplateOutlet]="schema.template"
+        [ngTemplateOutletContext]="{$implicit: schema, model: model, template: schema.subTemplate}"></ng-container>
+    }
+</ng-template>
+<ng-template #container let-schema let-model="model">
+    <div class="f-control-container sm:col-span-12 md:col-span-12 grid grid-cols-12 gap-4 p-2"
+        [class.compact-layout]="compactLayout" [attr.data-type]="schema.controlType">
+        <ng-container [ngTemplateOutlet]="label" [ngTemplateOutletContext]="{$implicit: schema}"></ng-container>
+        <ng-container [ngTemplateOutlet]="controls"
+            [ngTemplateOutletContext]="{$implicit: schema.fields, model: data}"></ng-container>
+    </div>
+</ng-template>
+<ng-template #textbox let-schema let-model="model">
+    <input pInputText type="text" [(ngModel)]="model[schema.field]" class="w-full h-full px-2 py-1"
+        [placeholder]="schema.placeholder" (blur)="handleBlur($event)" (change)="handleChanged(schema.field)" />
+</ng-template>
+<ng-template #numericBox let-schema let-model="model">
+    <p-inputnumber [(ngModel)]="model[schema.field]" mode="decimal" class="w-full h-full"
+        [disabled]="schema.disabled"></p-inputnumber>
+</ng-template>
+<ng-template #checkbox let-schema let-model="model">
+    <div class="w-full flex gap-2 pt-2">
+        <p-checkbox [inputId]="schema.field" [binary]="true" [(ngModel)]="model[schema.field]"
+            (onChange)="emitEvent('changed', schema)"></p-checkbox>
+        <label [for]="schema.field">
+            @if (schema.useLocalization){
+            @if (schema.label)
+            {
+            {{schema.label | translate}}
+            }
+            }
+            @else {
+            {{schema.label}}
+            }
+        </label>
+    </div>
+</ng-template>
+<ng-template #combobox let-schema let-model="model">
+    <ae-dropdown [schema]="schema" [(value)]="model[schema.field]" />
+</ng-template>
+<ng-template #datetime let-schema let-model="model">
+    <p-datepicker [(ngModel)]="model[schema.field]" inputStyleClass="px-2 py-1" appendTo="body" />
+</ng-template>
+<ng-template #baseControl let-schema let-template="template" let-model="model">
+    <div class="{{'f-control-container sm:col-span-12 md:col-span-' + schema.layoutWidth}}"
+        [attr.data-type]="schema.controlType">
+        <ng-container [ngTemplateOutlet]="label" [ngTemplateOutletContext]="{$implicit: schema}"></ng-container>
+        <ng-container [ngTemplateOutlet]="template"
+            [ngTemplateOutletContext]="{$implicit: schema, model: model}"></ng-container>
+    </div>
+</ng-template>
+<ng-template #label let-schema>
+    @if (schema.customSetting.showFormLabel !== false)
+    {
+    <label class="f-label">
+        @if (schema.useLocalization){
+        @if (schema.label)
+        {
+        {{schema.label | translate}}
+        }
+        }
+        @else {
+        {{schema.label}}
+        }
+    </label>
+    }
+</ng-template>

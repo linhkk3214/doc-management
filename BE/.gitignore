@@ -1,0 +1,97 @@
+# Compiled binary directories
+bin/
+obj/
+
+# User-specific files
+*.user
+*.swp
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build directories
+build/
+out/
+
+# Log files
+*.log
+
+# Temporary files
+*.vspscc
+*.vssscc
+*.tmp
+*.temp
+*.pidb
+*.suo
+*.sln.metaproj
+*.csproj.user
+*.cache
+*.pdb
+
+# Visual Studio working directory
+.vscode/
+.vs/
+
+# Dependency directories
+packages/
+node_modules/
+
+# macOS files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Resharper
+_ReSharper*/
+*.DotSettings.user
+
+# JetBrains Rider
+.idea/
+
+# Azure DevOps
+*.tf*
+
+# DotNet specific
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Generated files
+*.g.cs
+*.g.i.cs
+*.generated.cs
+*.bundle
+*.map
+*.d.ts
+
+# Database files
+*.mdf
+*.ldf
+
+# Secret files
+appsettings.Development.json
+appsettings.Production.json
+secrets.json
+
+# Coverage files
+coverage/
+*.coverage
+*.coveragexml
+*.testlog
+TestResults/
+
+# Published files
+*.publishsettings
+*.pubxml
+*.publishproj
+.publish/
+
+# Static files
+wwwroot/dist/
+wwwroot/lib/

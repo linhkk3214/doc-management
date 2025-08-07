@@ -1,0 +1,49 @@
+<div class="spa-app bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+  <div class="sidebar border-r">
+    <div class="sidebar-logo border-b cursor-pointer" (click)="goToHome($event)">
+      <!-- <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 400 400" fill="none">
+        <path
+          d="M220 78.7564434701786 c 9.05612244897958 -23.6389587257487 -21.5561224489796 -41.3129465580842 -37.5 -21.6506350946109 L 25 329.903810567666 c -15.9533561830463 22.3679765397207 -2.3479140061756 45.9332936495013 25 43.301270189222 L 350 373.205080756888 c 27.3479140061756 2.6320234602793 40.9533561830463 -20.9332936495013 25 -43.301270189222 L 275 156.698729810778 c -18.1972789115646 -25 -31.8027210884354 -25 -50 0 L 175 243.301270189222 c -15.9533561830463 22.3679765397207 -2.34791400617561 45.9332936495013 25 43.3012701892219 L 200 286.602540378444 c 27.3479140061756 2.63202346027936 40.9533561830463 -20.9332936495013 25 -43.3012701892219 L 230 251.961524227066 c -9.98797632095824 -23.1009526419165 22.4879763209582 -41.8509526419165 37.5 -21.650635094611 L 300 286.602540378444 c 15.9533561830463 22.3679765397207 2.34791400617559 45.9332936495013 -25 43.301270189222 L 125 329.903810567666 c -27.3479140061756 2.63202346027936 -40.9533561830463 -20.9332936495013 -25 -43.301270189222"
+          fill="orange" />
+      </svg> -->
+      <div class="app-name">
+        Quản lý tài liệu
+      </div>
+    </div>
+    <div class="sidebar-menu">
+      <ae-scrollbar>
+        <lib-layout-menu [data]="menus">
+        </lib-layout-menu>
+      </ae-scrollbar>
+    </div>
+  </div>
+  <div class="page-container">
+    <div class="page-header border-b">
+      <div class="switch-theme">
+        <i class="pi pi-sun"></i> <p-toggleswitch [(ngModel)]="isDark" (onChange)="toggleTheme()" /><i
+          class="pi pi-moon"></i>
+      </div>
+      <div class="localization">
+        <p-selectbutton [options]="localizations" [(ngModel)]="locale" optionLabel="label" optionValue="value"
+          aria-labelledby="basic" style="
+        --p-togglebutton-padding: 0.5rem 0.5rem;
+        --p-togglebutton-content-left: 0rem;
+        --p-togglebutton-content-top: 0rem;
+        --p-togglebutton-border-radius: 0rem;" allowEmpty="false" (onChange)="handleChangeLocale()" />
+
+      </div>
+      <div class="page-header-content">
+
+      </div>
+      <!-- <div class="user-info" (click)="menu.toggle($event)">
+        <i class="pi pi-user"></i>
+        <span>{{user.fullName}}</span>
+      </div>
+      <p-menu #menu [model]="userMenus" [popup]="true" styleClass="min-w-0 w-40" /> -->
+    </div>
+    <div class="page-content">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
+<p-toast></p-toast>

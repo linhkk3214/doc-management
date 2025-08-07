@@ -1,0 +1,53 @@
+### Test Portfolios API
+
+### Get all portfolios
+POST http://localhost:5001/portfolios/GetData
+Content-Type: application/json
+
+{
+  "pageNumber": 1,
+  "pageSize": 10,
+  "sortField": "Name",
+  "sortDirection": "ASC"
+}
+
+### Get portfolio by ID (replace with actual GUID)
+GET http://localhost:5001/portfolios/GetById/00000000-0000-0000-0000-000000000000
+
+### Add new portfolio
+POST http://localhost:5001/portfolios/Add
+Content-Type: application/json
+
+{
+  "departmentId": "00000000-0000-0000-0000-000000000001",
+  "termId": "00000000-0000-0000-0000-000000000002",
+  "documentTypeId": "00000000-0000-0000-0000-000000000003",
+  "catalogNumber": 1,
+  "boxNumber": 1,
+  "code": "HS001",
+  "name": "Hồ sơ test API",
+  "startDate": "2024-01-01T00:00:00Z",
+  "endDate": "2024-12-31T00:00:00Z",
+  "retentionPeriod": 10
+}
+
+### Update portfolio
+PUT http://localhost:5001/portfolios/Update
+Content-Type: application/json
+
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "departmentId": "00000000-0000-0000-0000-000000000001",
+  "termId": "00000000-0000-0000-0000-000000000002",
+  "documentTypeId": "00000000-0000-0000-0000-000000000003",
+  "catalogNumber": 1,
+  "boxNumber": 1,
+  "code": "HS001-Updated",
+  "name": "Hồ sơ test API - Updated",
+  "startDate": "2024-01-01T00:00:00Z",
+  "endDate": "2024-12-31T00:00:00Z",
+  "retentionPeriod": 15
+}
+
+### Delete portfolio
+DELETE http://localhost:5001/portfolios/Delete/00000000-0000-0000-0000-000000000000

@@ -1,0 +1,16 @@
+<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '50%' }"
+    (visibleChange)="handleVisibleChanged($event)">
+    <ng-template #header>
+        <div>Sửa bản ghi</div>
+    </ng-template>
+    <ae-scrollbar>
+        <div style="height: 800px">
+            <ae-form [schemas]="settingsVal()?.schemas" [(model)]="model">
+            </ae-form>
+        </div>
+    </ae-scrollbar>
+    <ng-template #footer>
+        <p-button label="Cancel" icon="pi pi-times" [text]="true" variant="text" severity="secondary" />
+        <p-button label="Save" icon="pi pi-check" [text]="true" severity="success" />
+    </ng-template>
+</p-dialog>

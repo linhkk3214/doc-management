@@ -1,0 +1,88 @@
+@use "sass:map";
+
+$li-padding: 0.5em;
+
+@mixin active { 
+    @apply hover:bg-blue-100 bg-blue-100 dark:hover:bg-blue-300 dark:hover:text-gray-800 dark:bg-blue-300 dark:text-gray-800;
+}
+
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+@for $i from 1 through 3 {
+    ul[level="#{$i}"]>li>a {
+        padding-left: calc(($i - 1) * 1.5em + $li-padding);
+    }
+}
+
+.menu {
+    width: 100%;
+
+    >li {
+        >a {
+            position: relative;
+            display: flex;
+            width: 100%;
+            text-decoration: none;
+            align-items: center;
+            padding: $li-padding;
+
+            >span {
+                margin-right: 0.5em;
+            }
+
+            >.content {
+                flex: 1 1;
+            }
+
+            &:before {
+                position: absolute;
+                content: '';
+                left: 0;
+                top: 50%;
+                height: 0;
+                width: 1px;
+                background-color: #1586ff;
+                border-radius: 0 5px 5px 0;
+                transform: translateY(-50%);
+                transition: height .3s, width .3s;
+            }
+
+            &:hover {
+                @include active;
+
+                &:before {
+                    height: 100%;
+                    width: 3px;
+                }
+            }
+        }
+
+        >ul {
+            overflow: hidden;
+        }
+
+        &.active {
+            >a {
+                @include active;
+
+                &:before {
+                    height: 100%;
+                    width: 3px;
+                }
+            }
+        }
+    }
+
+    &:not(.menu-child) {
+        height: 100%;
+        padding: $li-padding 0;
+    }
+
+    &.hidden {
+        display: none;
+    }
+}

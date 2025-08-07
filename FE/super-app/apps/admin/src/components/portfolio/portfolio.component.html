@@ -1,0 +1,34 @@
+<ae-crud>
+</ae-crud>
+@if (showFileViewDialog){
+<p-dialog [(visible)]="showFileViewDialog" [modal]="true" [style]="{ width: '100%', height: '100%' }"
+    [focusOnShow]="false">
+    <ng-template #header>
+        <div>Sửa bản ghi</div>
+    </ng-template>
+    <div class="flex flex-row h-full">
+        <div class="flex-1">
+            <ae-scrollbar>
+                <app-pdf-viewer-hoso [document]="selectedDocument">
+                </app-pdf-viewer-hoso>
+            </ae-scrollbar>
+        </div>
+        @if (selectedDocument)
+        {
+        <div style="width: 30%">
+            <ae-scrollbar>
+                <ae-form [schemas]="settings.schemas" [data]="selectedDocument" (changed)="handleFormChanged($event)">
+                </ae-form>
+                <check-rendered></check-rendered>
+            </ae-scrollbar>
+        </div>
+        }
+    </div>
+    <ng-template #footer>
+        <p-button label="Save" icon="pi pi-check" [text]="true" [autofocus]="false" severity="success"
+            (onClick)="saveData()" />
+        <p-button label="Cancel" icon="pi pi-times" [text]="true" variant="text" severity="secondary"
+            (onClick)="showFileViewDialog = false" />
+    </ng-template>
+</p-dialog>
+}

@@ -1,0 +1,65 @@
+### Test Documents API
+
+### Get all documents
+POST http://localhost:5001/documents/GetData
+Content-Type: application/json
+
+{
+  "pageNumber": 1,
+  "pageSize": 10,
+  "sortField": "Title",
+  "sortDirection": "ASC"
+}
+
+### Get document by ID (replace with actual GUID)
+GET http://localhost:5001/documents/GetById/00000000-0000-0000-0000-000000000000
+
+### Add new document
+POST http://localhost:5001/documents/Add
+Content-Type: application/json
+
+{
+  "portfolioId": "00000000-0000-0000-0000-000000000000",
+  "title": "Văn bản test API",
+  "summary": "Trích yếu của văn bản test",
+  "documentNumber": 1,
+  "documentSymbol": "01/2024/TEST",
+  "issuingAgency": "Cơ quan test",
+  "sequenceNumber": 1,
+  "signedDate": "2024-01-01T00:00:00Z",
+  "signer": "Người ký test",
+  "documentType": 1,
+  "pageCount": 5,
+  "originalAddress": "Địa chỉ test",
+  "originalPath": "/path/to/test/document.pdf"
+}
+
+### Update document
+PUT http://localhost:5001/documents/Update
+Content-Type: application/json
+
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "portfolioId": "00000000-0000-0000-0000-000000000000",
+  "title": "Văn bản test API - Updated",
+  "summary": "Trích yếu của văn bản test - Updated",
+  "documentNumber": 1,
+  "documentSymbol": "01/2024/TEST-UPDATED",
+  "issuingAgency": "Cơ quan test",
+  "sequenceNumber": 1,
+  "signedDate": "2024-01-01T00:00:00Z",
+  "signer": "Người ký test",
+  "documentType": 1,
+  "pageCount": 8,
+  "originalAddress": "Địa chỉ test - Updated",
+  "originalPath": "/path/to/test/document-updated.pdf"
+}
+
+### Delete document
+DELETE http://localhost:5001/documents/Delete/00000000-0000-0000-0000-000000000000
+
+### Get documents by portfolio (custom endpoint - uncomment in controller if needed)
+# GET http://localhost:5001/documents/by-portfolio/00000000-0000-0000-0000-000000000000
+
+### Search documents by symbol (custom endpoint - uncomment in controller if needed)
+# GET http://localhost:5001/documents/by-symbol/01/2024/TEST

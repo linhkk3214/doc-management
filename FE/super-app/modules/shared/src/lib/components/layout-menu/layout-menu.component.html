@@ -1,0 +1,25 @@
+<ng-container *ngTemplateOutlet="menuTemplate; context: {$implicit: dataVal, class: 'menu', level: 1}"></ng-container>
+<ng-template #menuTemplate let-items let-class="class" let-collapse="collapse" let-level="level">
+    <ul [class]="class" [@aniCollapse]="collapse" [attr.level]="level">
+        @for (menu of items; track menu.url) {
+        <li [class.active]="menu.active">
+            <a [href]="menu.url" class="dark:hover:text-white"
+                (click)="handleSelectMenu($event, menu)">
+                <span class="{{'pi pi-' + menu.icon}}"></span>
+                <span class="content">{{menu.name}}</span>
+                @if (menu.items != null)
+                {
+                <span (click)="toggleMenu(menu)"
+                    class="{{menu.collapse ? 'pi pi-angle-down' : 'pi pi-angle-up'}}"></span>
+                }
+            </a>
+            @if (menu.items != null)
+            {
+            <ng-container [ngTemplateOutlet]="menuTemplate"
+                [ngTemplateOutletContext]="{$implicit: menu.items, class: 'menu menu-child', collapse: menu.collapse, level: level + 1}">
+            </ng-container>
+            }
+        </li>
+        }
+    </ul>
+</ng-template>

@@ -1,0 +1,312 @@
+<p-table #table [value]="data" styleClass="ae-list" [(selection)]="selectedItems" [dataKey]="settingsVal.entityKey"
+    [selectionMode]="settingsVal.selectionMode" [showGridlines]="true" stripedRows [paginator]="settingsVal.paginator"
+    [customSort]="true" (sortFunction)="customSort($event)" [sortMode]="settingsVal.sortMode"
+    (onRowSelect)="handleRowSelect($event)">
+    <ng-template #caption>
+        <div class="table-title">
+            @if(this.caption)
+            {
+            <ng-container [ngTemplateOutlet]="this.caption"></ng-container>
+            }
+            @else {
+            {{settingsVal.title}}
+            }
+        </div>
+        <div>
+            <!-- <p-button icon="pi pi-plus" [label]="'add' | translate" class="cursor-pointer" text="true"
+                severity="success" (click)="emitEvent('add')"></p-button> -->
+            @if (settingsVal.allowImport)
+            {
+            <p-button icon="pi pi-upload" label="Import" class="cursor-pointer" text="true" severity="success"
+                (click)="emitEvent('import')"></p-button>
+            }
+            <!-- <p-button icon="pi pi-trash"
+                [label]="('delete' | translate) + (selectedItems.length ? ' (' + selectedItems.length + ')' : '')"
+                class="cursor-pointer" text="true" [disabled]="!selectedItems.length" severity="danger"
+                (click)="emitEvent('deletes', selectedItems)"></p-button> -->
+        </div>
+    </ng-template>
+    <ng-template #colgroup>
+        <colgroup>
+            @if (!settingsVal.hiddenCheckbox)
+            {
+            <col width="36px" />
+            }
+            @if (!settingsVal.hiddenRowIndex)
+            {
+            <col width="45px" />
+            }
+            @if (!settingsVal.hiddenReOrder)
+            {
+            <col width="36px" />
+            }
+            @for(col of processedColumns(); track col.fieldPath) {
+            @if (!col.hiddenInList)
+            {
+            <col [width]="col.columnWidth" />
+            }
+            }
+            @if (!settingsVal.hiddenFunctionColumn)
+            {
+            <col width="120px" />
+            }
+        </colgroup>
+    </ng-template>
+    <ng-template #header>
+        <tr>
+            @if (!settingsVal.hiddenCheckbox)
+            {
+            <th class="p-0 text-center">
+                <p-button icon="pi pi-sync" class="cursor-pointer" rounded="true" text="true" severity="success"
+                    [pTooltip]="'refresh' | translate" [disabled]="loading()" (click)="handleReload()"></p-button>
+            </th>
+            }
+            @if (!settingsVal.hiddenRowIndex)
+            {
+            <th class="p-0 text-center">{{'rowOrder' | translate}}</th>
+            }
+            @if (!settingsVal.hiddenReOrder)
+            {
+            <th></th>
+            }
+            @for(col of processedColumns(); track col.fieldPath) {
+            @if (!col.hiddenInList) {
+            @if (col.useLocalization){
+            <th [pTooltip]="col.fullLabel ? (col.fullLabel | translate) : undefined" [pSortableColumn]="col.fieldPath"
+                [pSortableColumnDisabled]="!col.allowSort || loading()" [class]="col.headerClass">
+                @if (col.label)
+                {
+                {{col.label | translate}}
+                }
+                @if (col.allowSort)
+                {
+                <p-sortIcon [field]="col.fieldPath" class="sort-icon" />
+                }
+            </th>
+            }
+            @else {
+            <th [pTooltip]="col.fullLabel" [class]="col.headerClass">
+                {{col.label}}
+            </th>
+            }
+            }
+            }
+            @if (!settingsVal.hiddenFunctionColumn)
+            {
+            <th>{{'function' | translate}}</th>
+            }
+        </tr>
+        @if (!settingsVal.hiddenFilterRow)
+        {
+        <tr class="header-filters">
+            @if (!settingsVal.hiddenCheckbox)
+            {
+            <th class="cell-checkbox">
+                <!-- <p-checkbox [(ngModel)]="checkedAll"></p-checkbox> -->
+                <p-tableHeaderCheckbox />
+            </th>
+            }
+            @if (!settingsVal.hiddenRowIndex)
+            {
+            <th class="p-0 text-center">
+                <ng-container [ngTemplateOutlet]="iconFilter" [ngTemplateOutletContext]="{ 
+                    hasFilter: hasFilter,
+                    handle: removeAllFilter
+                }"></ng-container>
+            </th>
+            }
+            @if (!settingsVal.hiddenReOrder)
+            {
+            <th></th>
+            }
+            @for(col of processedColumns(); track col.fieldPath) {
+            @if (!col.hiddenInList)
+            {
+            <th class="p-0 text-center">
+                @if (col.allowFilter)
+                {
+                <div class="filter-container" [class.no-padding]="col.customSetting.noPadding">
+                    @if (col.customSetting && col.customSetting.templateFilter)
+                    {
+                    <div class="filter-control" [class.center]="col.customSetting.center">
+                        <ng-container [ngTemplateOutlet]="col.customSetting.templateFilter"
+                            [ngTemplateOutletContext]="{$implicit: col}"></ng-container>
+                    </div>
+                    @if (col.customSetting.needIconFilter)
+                    {
+                    <ng-container [ngTemplateOutlet]="iconFilter" [ngTemplateOutletContext]="{ 
+                            $implicit: col, hasFilter: dicSearchValue[col.field] || dicSearchValue[col.field + fromPrefix] || dicSearchValue[col.field + toPrefix],
+                            handle: toggleFilter
+                        }"></ng-container>
+                    }
+                    }
+                </div>
+                }
+            </th>
+            }
+            }
+            @if (!settingsVal.hiddenFunctionColumn)
+            {
+            <th class="text-right">
+                <p-button [pTooltip]="'configColumn' | translate" icon="pi pi-cog" text="true" [rounded]="true"
+                    severity="info" (click)="showColumnConfiguration()" />
+            </th>
+            }
+        </tr>
+        }
+    </ng-template>
+    <ng-template #body let-rowItem let-rowIndex="rowIndex">
+        <tr [pSelectableRow]="rowItem" [pReorderableRow]="rowIndex">
+            @if (!settingsVal.hiddenCheckbox)
+            {
+            <td>
+                <!-- <p-checkbox [(ngModel)]="dicChecked[rowItem[settingsVal.entityKey]]"></p-checkbox> -->
+                <p-tableCheckbox [value]="rowItem" />
+            </td>
+            }
+            @if (!settingsVal.hiddenRowIndex)
+            {
+            <td class="text-right">{{rowIndex + 1}}</td>
+            }
+            @if (!settingsVal.hiddenReOrder)
+            {
+            <td><span class="pi pi-arrows-alt" pReorderableRowHandle></span></td>
+            }
+            @for(col of processedColumns(); track col.fieldPath) {
+            @if (!col.hiddenInList)
+            {
+            <td [class]="col.bodyClass">
+                @if (col.cellTemplate)
+                {
+                <ng-container [ngTemplateOutlet]="col.cellTemplate" [ngTemplateOutletContext]="{ 
+                        $implicit: rowItem, col: col
+                    }"></ng-container>
+                }
+                @else
+                {
+                {{rowItem | valueByPath:col.displayField}}
+                }
+            </td>
+            }
+            }
+            @if (!settingsVal.hiddenFunctionColumn)
+            {
+            <td class="text-right">
+                <p-button [pTooltip]="'edit' | translate" icon="pi pi-pencil" aria-label="Edit" text="true"
+                    [rounded]="true" severity="info" (onClick)="emitEvent('edit', rowItem)" />
+                <!-- <p-button [pTooltip]="'delete' | translate" icon="pi pi-trash" aria-label="Delete" text="true"
+                    [rounded]="true" severity="danger" (onClick)="emitEvent('delete', rowItem)" /> -->
+            </td>
+            }
+        </tr>
+    </ng-template>
+    <ng-template #summary>
+        @if (settingsVal.showPageSettings)
+        {
+        <p-paginator #paginator [totalRecords]="listData().total" [first]="first" [rows]="pageSize()"
+            [rowsPerPageOptions]="rowPerPageOptions" [showCurrentPageReport]="true"
+            [currentPageReportTemplate]="'table_pageReportTemplate' | translate" (onPageChange)="handleReload()" />
+        }
+    </ng-template>
+</p-table>
+<check-rendered (rendered)="handleReady()"></check-rendered>
+<ng-template #iconFilter let-col let-hasFilter="hasFilter" let-handle="handle">
+    <p-button #button class="btn-filter cursor-pointer" [icon]="hasFilter ? 'pi pi-filter-slash': 'pi pi-filter'"
+        [rounded]="true" text="true" severity="secondary" [pTooltip]="(hasFilter ? 'unFilter' : 'filter') | translate"
+        (click)="handle(col, button, $event)" (onBlur)="handleBlurButtonFilter()"></p-button>
+</ng-template>
+<ng-template #filterText let-col>
+    <input #element pInputText type="text" [(ngModel)]="dicSearchValue[col.fieldPath]"
+        [placeholder]="col.searchPlaceholder" (keydown.enter)="correctSearchValueAndSearch(col.fieldPath)"
+        (focus)="handleFocusSearch(element, col.fieldPath)" (blur)="handleBlurSearch(element, col.fieldPath, true)" />
+</ng-template>
+<ng-template #filterNumber let-col>
+    <p-inputnumber #elementFrom [(ngModel)]="dicSearchValue[col.fieldPath + fromPrefix]" mode="decimal"
+        [maxFractionDigits]="2" [placeholder]="'from' | translate"
+        (onFocus)="handleFocusSearch(elementFrom.el.nativeElement, col.fieldPath)"
+        (onKeyDown)="handleKeydownEnter($event, col.fieldPath + fromPrefix)"
+        (onBlur)="handleBlurSearch(elementFrom.el.nativeElement, col.fieldPath + fromPrefix, true)"></p-inputnumber>
+    -
+    <p-inputnumber #elementTo [(ngModel)]="dicSearchValue[col.fieldPath + toPrefix]" mode="decimal"
+        [maxFractionDigits]="2" [placeholder]="'to' | translate"
+        (onFocus)="handleFocusSearch(elementTo.el.nativeElement, col.fieldPath)"
+        (onKeyDown)="handleKeydownEnter($event, col.fieldPath + toPrefix)"
+        (onBlur)="handleBlurSearch(elementTo.el.nativeElement, col.fieldPath + toPrefix, true)"></p-inputnumber>
+</ng-template>
+<ng-template #filterDropdown let-col>
+    <ae-dropdown #element class="w-full" [schema]="col" [multiple]="col.multipleSearch"
+        [(value)]="dicSearchValue[col.fieldPath]" (focus)="handleFocusSearchDropDown(col, element)"
+        (hide)="handleBlurSearchDropDown(col, element)" (valueChange)="handleSearchDropdown(col)"
+        (smartValueChange)="correctSearchValueAndSearch(col.fieldPath)"></ae-dropdown>
+</ng-template>
+<ng-template #filterCheckbox let-col>
+    <!-- <p-checkbox #element class="w-full" [ngModel]="dicSearchValue[col.field]" [binary]="true"
+        [indeterminate]="dicSearchValue[col.field] === undefined"
+        (onChange)="handleTriCheckboxChange(col)"></p-checkbox> -->
+    <p-selectbutton [options]="binaryOptions" [(ngModel)]="dicSearchValue[col.field]" optionLabel="label"
+        optionValue="value" aria-labelledby="basic" style="
+        --p-togglebutton-padding: 0.25rem 0.25rem;
+        --p-togglebutton-content-left: 0rem;
+        --p-togglebutton-content-top: 0rem;
+        --p-togglebutton-border-radius: 0rem;
+        --p-togglebutton-background: transparent;
+        --p-togglebutton-border-color: transparent;" (onChange)="handleTriCheckboxChange(col)">
+        <ng-template #item let-item>
+            <span [class]="item.class">
+                <i [class]="item.icon"></i>
+            </span>
+        </ng-template>
+    </p-selectbutton>
+</ng-template>
+<ng-template #cellTemplateCheckbox let-rowItem let-col="col">
+    <!-- <p-checkbox [binary]="true" [disabled]="true" [ngModel]="rowItem[col.field]"></p-checkbox> -->
+    @if (rowItem[col.field])
+    {
+    <span class="pi pi-check text-green-500"></span>
+    }
+    @else {
+    <span class="pi pi-times text-orange-500"></span>
+    }
+</ng-template>
+<ng-template #cellTemplateDate let-rowItem let-col="col">
+    {{rowItem[col.field] | date:'dd/MM/yyyy'}}
+</ng-template>
+<ng-template #cellTemplateDatetime let-rowItem let-col="col">
+    {{rowItem[col.field] | date:'dd/MM/yyyy HH:mm'}}
+</ng-template>
+
+<!-- edit inline template -->
+<ng-template #inlineTemplateCheckbox let-rowItem let-col="col">
+    <p-checkbox [binary]="true" [(ngModel)]="rowItem[col.field]"></p-checkbox>
+</ng-template>
+<!-- End edit inline template -->
+
+@if (visibleDialog == dialogType.ColumnSetting)
+{
+<p-dialog [visible]="true" [modal]="true" [style]="{ width: '700px', height: '550px' }"
+    (visibleChange)="handleDialogVisible($event)">
+    <ng-template #header>
+        <div>{{'configColumn' | translate}}</div>
+    </ng-template>
+    <column-configuration>
+        <ae-list [settings]="columnConfigurationSetting" [columns]="columnConfigurationSchema"
+            [listData]="columnConfigurationDataSource">
+            <ng-template #caption>
+                <div class="flex w-full items-center">
+                    <div class="flex-1">{{'columnList' | translate}}</div>
+                    <div>
+                        <p-button icon="pi pi-undo" class="cursor-pointer" label="Reset" [text]="true" severity="warn"
+                            (click)="handleResetColumnSetting()"></p-button>
+                    </div>
+                </div>
+            </ng-template>
+        </ae-list>
+    </column-configuration>
+    <ng-template #footer>
+        <p-button label="Cancel" icon="pi pi-times" [text]="true" variant="text" severity="secondary"
+            (onClick)="visibleDialog = dialogType.None" />
+        <p-button label="Ok" icon="pi pi-check" [text]="true" severity="success"
+            (onClick)="handleSaveColumnSettings()" />
+    </ng-template>
+</p-dialog>
+}

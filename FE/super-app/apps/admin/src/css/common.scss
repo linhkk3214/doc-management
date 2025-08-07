@@ -1,0 +1,21 @@
+$border-color-light: rgba(0, 0, 0, 0.0625);
+
+.border-t {
+    border-top: 1px solid $border-color-light;
+    @apply border-gray-200 dark:border-gray-700;
+}
+
+.border-r {
+    border-right: 1px solid $border-color-light;
+    @apply border-gray-200 dark:border-gray-700;
+}
+
+.border-b {
+    border-bottom: 1px solid $border-color-light;
+    @apply border-gray-200 dark:border-gray-700;
+}
+
+.border-l {
+    border-left: 1px solid $border-color-light;
+    @apply border-gray-200 dark:border-gray-700;
+}

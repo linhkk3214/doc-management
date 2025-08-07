@@ -1,0 +1,213 @@
+/* You can add global styles to this file, and also import other style files */
+@use 'common';
+@import "primeicons/primeicons.css";
+
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --p-inputtext-padding-x: 0.5rem;
+    --p-inputtext-padding-y: 0.25rem;
+    --p-select-padding-x: 0.5rem;
+    --p-select-padding-y: 0.25rem;
+    --p-multiselect-padding-x: 0.5rem;
+    --p-multiselect-padding-y: 0.25rem;
+    --p-datatable-header-padding: 0;
+    --p-datatable-body-cell-padding: 0.5rem 0.5rem;
+    --p-datatable-header-cell-padding: 0.5rem 0.75rem;
+    --p-dialog-header-padding: 0.5rem 0.5rem 0.5rem 1rem;
+    --p-dialog-footer-padding: 0.5rem;
+    --p-togglebutton-content-checked-background: var(--p-checkbox-checked-background);
+    --p-togglebutton-checked-color: var(--p-checkbox-icon-checked-color);
+}
+
+a {
+    color: inherit;
+}
+
+p-table {
+    .p-datatable {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+
+        .p-datatable-header {
+            .table-title {
+                padding: 0.5rem;
+            }
+        }
+
+        table {
+            table-layout: fixed;
+
+            thead {
+                position: sticky;
+                top: 0;
+                z-index: 1;
+
+                tr .cell-checkbox {
+                    --p-datatable-header-cell-padding: 0.5rem 0.5rem;
+                }
+
+                .header-filters {
+                    th p-columnfilterformelement {
+                        flex: 1 1;
+
+                        .p-inputtext {
+                            width: 100%;
+                        }
+                    }
+                }
+
+                button {
+                    --p-button-icon-only-width: 1.5rem;
+                }
+            }
+
+            td {
+                word-break: break-word;
+            }
+        }
+    }
+}
+
+.p-select {
+    .p-select-label {
+        display: flex;
+        align-items: center;
+    }
+}
+
+p-dialog {
+    .p-dialog-header {
+        @apply border-b border-gray-200 dark:border-gray-700;
+    }
+
+    .p-dialog-content {
+        padding: 0.5rem;
+    }
+
+    .p-dialog-footer {
+        @apply bg-gray-200 dark:bg-gray-700;
+        gap: 0;
+    }
+}
+
+.spa-app {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+
+    .sidebar {
+        flex: 0 0 280px;
+        display: flex;
+        flex-direction: column;
+
+        .sidebar-logo {
+            padding: 0.5em;
+            height: 3em;
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+            font-weight: bold;
+
+            .app-icon {
+                margin-right: 0.5em;
+                display: flex;
+                align-items: center;
+            }
+
+            .app-name {
+                font-weight: 500;
+            }
+        }
+
+        .sidebar-menu {
+            flex: 1 1;
+            overflow: auto;
+        }
+    }
+
+    .page-container {
+        flex: 1 1;
+        display: flex;
+        flex-direction: column;
+
+        .page-header {
+            height: 3em;
+            flex: 0 0 auto;
+            display: flex;
+
+            .switch-theme {
+                display: flex;
+                align-items: center;
+                gap: 0.5em;
+                padding: 0 0.5em;
+
+                p-toggleswitch {
+                    display: inline-flex;
+                }
+            }
+
+            .localization {
+                display: flex;
+                align-items: center;
+            }
+
+            .page-header-content {
+                flex: 1 1;
+            }
+
+            .user-info {
+                display: flex;
+                flex: 0 0 auto;
+                gap: 0.5em;
+                height: 100%;
+                padding: 0.5em;
+                align-items: center;
+                cursor: pointer;
+            }
+        }
+
+        .page-content {
+            flex: 1 1;
+            overflow: auto;
+        }
+    }
+}
+
+ng-scrollbar {
+    scrollbar-y:hover {
+        .ng-scrollbar-thumb {
+            background-color: #7d7d7d;
+        }
+    }
+}
+
+.compact-layout {
+    .f-control-container {
+        .p-datepicker {
+            height: 100%
+        }
+
+        .p-inputnumber-input {
+            width: 100%;
+        }
+    }
+}
