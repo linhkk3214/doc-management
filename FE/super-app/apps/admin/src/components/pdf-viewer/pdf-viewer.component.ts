@@ -1,9 +1,19 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  inject,
+  Input,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { DocumentService } from '../../services/document.service';
 import { Subject, takeUntil } from 'rxjs';
-import { ObjectType } from '@super-app/shared';
+import { ButtonModule } from 'primeng/button';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { FormsModule } from '@angular/forms';
 
 export interface DocumentViewData {
   id: string;
@@ -14,11 +24,23 @@ export interface DocumentViewData {
 @Component({
   selector: 'app-pdf-viewer',
   standalone: true,
-  imports: [CommonModule, PdfViewerModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    FormsModule,
+    PdfViewerModule,
+    ButtonModule,
+    SelectButtonModule,
+  ],
   templateUrl: './pdf-viewer.component.html',
   styleUrls: ['./pdf-viewer.component.scss'],
 })
 export class PdfViewerComponent implements OnInit, OnDestroy {
+  private cdr = inject(ChangeDetectorRef);
+  viewModeOptions = [
+    { value: 'all', label: 'Tất cả' },
+    { value: 'each', label: 'Từng trang' },
+  ];
   @Input()
   set document(value: any) {
     this._document = value;
@@ -35,10 +57,14 @@ export class PdfViewerComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   // PDF viewer variables
-  zoom: number = 1.0;
-  page: number = 1;
-  totalPages: number = 0;
+  zoom = 1.0;
+  page = 1;
+  totalPages = 0;
   initialized = false;
+
+  // New features
+  viewMode: 'all' | 'each' = 'each'; // Toggle between single page and continuous scroll
+  showAllPages = false;
 
   constructor(private documentService: DocumentService) {}
 
@@ -74,6 +100,7 @@ export class PdfViewerComponent implements OnInit, OnDestroy {
           blob.arrayBuffer().then((arrayBuffer) => {
             this.pdfSrc = new Uint8Array(arrayBuffer);
             this.loading = false;
+            this.cdr.detectChanges();
           });
         },
         error: (error) => {
@@ -100,9 +127,7 @@ export class PdfViewerComponent implements OnInit, OnDestroy {
       'Không thể tải file PDF. File có thể bị hỏng hoặc không đúng định dạng PDF.';
   }
 
-  onPageChange(page: any) {
-    this.page = page;
-  }
+  onPageChange(page: any) {}
 
   previousPage() {
     if (this.page > 1) {
@@ -127,14 +152,23 @@ export class PdfViewerComponent implements OnInit, OnDestroy {
   goToPage(pageNum: number) {
     if (pageNum >= 1 && pageNum <= this.totalPages) {
       this.page = pageNum;
+    } else {
+      this.page = 1;
+    }
+  }
+
+  handleViewMode() {
+    this.showAllPages = this.viewMode == 'all';
+    if (this.showAllPages) {
+      this.page = 1; // Reset to first page when switching to continuous mode
     }
   }
 
   downloadFile() {
-    if (!this.document?.id) return;
+    if (!this._document?.id) return;
 
     this.documentService
-      .downloadFile(this.document.id)
+      .downloadFile(this._document.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (blob: Blob) => {
@@ -143,8 +177,8 @@ export class PdfViewerComponent implements OnInit, OnDestroy {
           link.href = url;
 
           // Try to get filename from document info or use default
-          const filename = this.document?.documentSymbol
-            ? `${this.document.documentSymbol}.pdf`
+          const filename = this._document?.documentSymbol
+            ? `${this._document.documentSymbol}.pdf`
             : 'document.pdf';
 
           link.download = filename;
@@ -161,9 +195,9 @@ export class PdfViewerComponent implements OnInit, OnDestroy {
   }
 
   openInNewTab() {
-    if (!this.document?.id) return;
+    if (!this._document?.id) return;
 
-    const url = this.documentService.getFileUrl(this.document.id);
+    const url = this.documentService.getFileUrl(this._document.id);
     window.open(url, '_blank');
   }
 

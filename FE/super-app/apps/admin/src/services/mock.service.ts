@@ -2,13 +2,14 @@
 import { Injectable } from '@angular/core';
 import { BaseService, GridInfo, IResponseData, ObjectType } from '@super-app/shared';
 import { delay, Observable, of } from 'rxjs';
+import { buildApiUrl, API_CONSTANTS } from '../app/constants/api.constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MockDataService extends BaseService {
   constructor() {
-    super('https://ocr-app-api.csharpp.com/cities');
+    super(buildApiUrl(API_CONSTANTS.ENDPOINTS.CITIES));
   }
   static cities = [
     { "id": "A714F782-0F29-447F-92BF-00A8D23BC7B7", "code": "CB", "name": "Cao Bằng", "type": 2, "capital": 0 },

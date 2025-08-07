@@ -50,7 +50,34 @@
               "maximumError": "4kb"
             }
           ],
-          "outputHashing": "all"
+          "outputHashing": "all",
+          "fileReplacements": [
+            {
+              "replace": "apps/admin/src/environments/environment.ts",
+              "with": "apps/admin/src/environments/environment.prod.ts"
+            }
+          ]
+        },
+        "staging": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "outputHashing": "all",
+          "fileReplacements": [
+            {
+              "replace": "apps/admin/src/environments/environment.ts",
+              "with": "apps/admin/src/environments/environment.staging.ts"
+            }
+          ]
         },
         "development": {
           "optimization": false,
@@ -76,6 +103,9 @@
       "configurations": {
         "production": {
           "buildTarget": "admin:build:production"
+        },
+        "staging": {
+          "buildTarget": "admin:build:staging"
         },
         "development": {
           "buildTarget": "admin:build:development"

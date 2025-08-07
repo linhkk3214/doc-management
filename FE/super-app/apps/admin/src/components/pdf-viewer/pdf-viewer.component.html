@@ -1,34 +1,102 @@
 <!-- Loading state -->
-<div *ngIf="loading" class="loading-container">
-    <div class="loading-spinner">
-        <i class="fas fa-spinner fa-spin"></i>
-        <p>Đang tải file PDF...</p>
+<div *ngIf="loading" class="flex-1 flex justify-center items-center p-10">
+    <div class="text-center text-gray-600 dark:text-gray-400">
+        <i class="fas fa-spinner fa-spin text-2xl mb-3 block text-blue-500"></i>
+        <p class="m-0 text-sm">Đang tải file PDF...</p>
     </div>
 </div>
 
 <!-- Error state -->
-<div *ngIf="error && !loading" class="error-container">
-    <div class="error-content">
-        <i class="fas fa-exclamation-circle"></i>
-        <h4>Không thể tải file</h4>
-        <p>{{ error }}</p>
-        <button class="btn btn-primary" (click)="retry()">
-            <i class="fas fa-refresh"></i>
+<div *ngIf="error && !loading" class="flex-1 flex justify-center items-center p-10">
+    <div class="text-center max-w-md">
+        <i class="fas fa-exclamation-circle text-5xl text-red-500 mb-4 block"></i>
+        <h4 class="m-0 mb-2 text-gray-800 dark:text-gray-200 text-base">Không thể tải file</h4>
+        <p class="m-0 mb-5 text-gray-600 dark:text-gray-400 text-sm leading-relaxed">{{ error }}</p>
+        <button
+            class="bg-blue-500 text-white border border-blue-500 hover:bg-blue-600 px-3 py-2 rounded text-sm font-medium transition-all duration-200 inline-flex items-center gap-2"
+            (click)="retry()">
+            <i class="fas fa-refresh text-xs"></i>
             Thử lại
         </button>
     </div>
 </div>
 <!-- PDF Viewer -->
-<div *ngIf="pdfSrc && !loading && !error" class="pdf-viewer">
-    <pdf-viewer [src]="pdfSrc" [render-text]="true" [original-size]="false" [fit-to-page]="true" [zoom]="zoom"
-        [page]="page" [show-all]="false" [autoresize]="true" (after-load-complete)="onPdfLoaded($event)"
-        (error)="onPdfLoadError($event)" (page-rendered)="onPageChange($event)"
-        style="width: 100%; height: calc(100vh - 200px);">
-    </pdf-viewer>
+<div *ngIf="pdfSrc && !loading && !error"
+    class="pdf-viewer flex flex-col relative overflow-hidden bg-gray-50 transition-colors duration-300">
+    <!-- PDF Controls Toolbar -->
+    <div class="pdf-toolbar flex justify-between items-center p-2 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-600 flex-shrink-0 gap-4 shadow-sm transition-all duration-300"
+        *ngIf="showToolbar">
+        <div class="toolbar-group flex items-center gap-2">
+            <!-- Page Navigation -->
+            <p-button title="Trang trước" icon="pi pi-arrow-left" [text]="true" variant="text" severity="secondary"
+                (click)="previousPage()" [disabled]="page <= 1 || showAllPages">
+            </p-button>
+
+            <div class="page-info flex items-center gap-1" *ngIf="!showAllPages">
+                <input #pageInput type="number"
+                    class="w-16 h-7 text-center border border-gray-300 dark:border-gray-500 rounded text-xs bg-white dark:bg-gray-700 dark:text-gray-100 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-400 transition-all duration-200"
+                    [value]="page" (change)="goToPage(+pageInput.value)" min="1" [max]="totalPages">
+                <span class="page-total text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap font-medium">/ {{
+                    totalPages }}</span>
+            </div>
+
+            <div class="page-info" *ngIf="showAllPages">
+                <span class="page-total text-xs text-gray-600 dark:text-gray-400 font-medium">{{ totalPages }}
+                    trang</span>
+            </div>
+
+            <p-button title="Trang sau" icon="pi pi-arrow-right" [text]="true" variant="text" severity="secondary"
+                (click)="nextPage()" [disabled]="page >= totalPages || showAllPages">
+            </p-button>
+        </div>
+
+        <div class="toolbar-group flex items-center gap-2">
+            <p-selectbutton [options]="viewModeOptions" [(ngModel)]="viewMode" optionLabel="label" optionValue="value"
+                aria-labelledby="basic" style="
+        --p-togglebutton-padding: 0.5rem 0.5rem;
+        --p-togglebutton-content-left: 0rem;
+        --p-togglebutton-content-top: 0rem;
+        --p-togglebutton-border-radius: 0rem;" allowEmpty="false" (onChange)="handleViewMode()" />
+        </div>
+
+        <div class="toolbar-group flex items-center gap-2">
+            <!-- Zoom Controls -->
+            <p-button title="Thu nhỏ" icon="pi pi-search-minus" [text]="true" variant="text" severity="secondary"
+                (click)="zoomOut()" [disabled]="zoom <= 0.25">
+                <i class="fas fa-search-minus text-xs"></i>
+            </p-button>
+
+            <span class="zoom-level text-xs text-gray-600 dark:text-gray-400 min-w-10 text-center font-medium">{{ (zoom
+                * 100) | number:'1.0-0' }}%</span>
+
+            <p-button title="Phóng to" icon="pi pi-search-plus" [text]="true" variant="text" severity="secondary"
+                (click)="zoomIn()" [disabled]="zoom >= 3">
+                <i class="fas fa-search-plus text-xs"></i>
+            </p-button>
+        </div>
+
+        <div class="toolbar-group flex items-center gap-2">
+            <!-- Download & External Actions -->
+            <p-button label="Tải về" icon="pi pi-download" [text]="true" variant="text" severity="success"
+                (click)="downloadFile()">
+            </p-button>
+        </div>
+    </div>
+
+    <!-- PDF Viewer Component -->
+    <div class="flex-1 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+        <pdf-viewer [src]="pdfSrc" [render-text]="true" [original-size]="false" [fit-to-page]="!showAllPages"
+            [zoom]="zoom" [page]="page" [show-all]="showAllPages" [autoresize]="true"
+            (after-load-complete)="onPdfLoaded($event)" (error)="onPdfLoadError($event)"
+            (page-rendered)="onPageChange($event)" style="width: 100%; height: calc(100vh - 260px);">
+        </pdf-viewer>
+    </div>
 </div>
 
 <!-- No document state -->
-<div *ngIf="!document" class="no-document">
-    <i class="fas fa-file-pdf"></i>
-    <p>Chọn tài liệu để xem PDF</p>
+<div *ngIf="!_document" class="flex-1 flex justify-center items-center p-10 text-gray-500 dark:text-gray-400 italic">
+    <div class="text-center">
+        <i class="fas fa-file-pdf text-5xl mb-3 block"></i>
+        <p class="m-0 text-sm">Chọn tài liệu để xem PDF</p>
+    </div>
 </div>

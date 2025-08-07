@@ -2,14 +2,15 @@
 import { Injectable } from '@angular/core';
 import { BaseService } from '@super-app/shared';
 import { Observable } from 'rxjs';
+import { buildApiUrl, API_CONSTANTS } from '../app/constants/api.constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PortfolioService extends BaseService {
-  private readonly baseUrl = 'https://ocr-app-api.csharpp.com/portfolios';
+  private readonly baseUrl = buildApiUrl(API_CONSTANTS.ENDPOINTS.PORTFOLIOS);
   constructor() {
-    super('https://ocr-app-api.csharpp.com/portfolios');
+    super(buildApiUrl(API_CONSTANTS.ENDPOINTS.PORTFOLIOS));
   }
 
   /**

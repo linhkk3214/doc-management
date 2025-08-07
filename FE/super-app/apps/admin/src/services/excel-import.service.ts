@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { BaseService } from '@super-app/shared';
+import { buildApiUrl, API_CONSTANTS } from '../app/constants/api.constants';
 
 export interface ExcelImportProgress {
   stage: string;
@@ -31,7 +32,7 @@ export interface ExcelImportResult {
 })
 export class ExcelImportService {
   private http = inject(HttpClient);
-  private baseUrl = 'https://ocr-app-api.csharpp.com/documents/import-excel';
+  private baseUrl = buildApiUrl(API_CONSTANTS.ENDPOINTS.DOCUMENTS_IMPORT_EXCEL);
 
   constructor() { }
 
