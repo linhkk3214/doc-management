@@ -16,6 +16,7 @@ import { firstValueFrom } from 'rxjs';
 import { routes } from './app.routes';
 import { BluePreset } from '@super-app/shared';
 import { MessageService } from 'primeng/api';
+import { buildApiUrl, API_CONSTANTS } from './constants/api.constants';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -32,7 +33,7 @@ export const appConfig: ApplicationConfig = {
       const httpLink = inject(HttpLink);
 
       return {
-        link: httpLink.create({ uri: 'http://localhost:5001/graphql' }),
+        link: httpLink.create({ uri: buildApiUrl(API_CONSTANTS.ENDPOINTS.GRAPHQL) }),
         cache: new InMemoryCache(),
       };
     }),

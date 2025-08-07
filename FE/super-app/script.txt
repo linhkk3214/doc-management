@@ -1,8 +1,0 @@
--- Run app
-npx nx serve admin
--- Create app
-npx nx g @nx/angular:app [apps/inventory]
--- Create lib
-npx nx g @nx/angular:library [libs/products]
--- Test
-nx test shared

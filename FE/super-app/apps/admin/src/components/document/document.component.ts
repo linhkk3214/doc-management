@@ -90,6 +90,7 @@ export class DocumentComponent extends AeCrud implements OnInit, AfterViewInit {
     const settings = new CrudListSetting();
     super(settings, {});
     settings.objectName = 'Tài liệu';
+    settings.hiddenRowIndex = true;
     settings.sortMode = 'multiple';
     settings.schemas = [
       createNumberBox('trangSo', {
@@ -101,6 +102,7 @@ export class DocumentComponent extends AeCrud implements OnInit, AfterViewInit {
         label: 'CQBH',
         fullLabel: 'Cơ quan ban hành',
         allowFilter: false,
+        columnWidth: '15%',
         layoutWidth: 12,
       }),
       createNumberBox('sequenceNumber', {
@@ -117,7 +119,7 @@ export class DocumentComponent extends AeCrud implements OnInit, AfterViewInit {
       }),
       createDatePicker('signedDate', {
         label: 'Ngày ký',
-        columnWidth: 130,
+        columnWidth: 110,
         allowFilter: false,
         layoutWidth: 12,
       }),
@@ -140,6 +142,7 @@ export class DocumentComponent extends AeCrud implements OnInit, AfterViewInit {
       }),
       createTextBox('signer', {
         label: 'Người ký',
+        columnWidth: 140,
         layoutWidth: 12,
       }),
       createDropdown('loaiBan', {
@@ -470,7 +473,7 @@ export class DocumentComponent extends AeCrud implements OnInit, AfterViewInit {
   }
 
   handleVBLQListEvent(evt: ListEventData) {
-    console.log(evt);
+    this.viewFile(evt.data);
   }
 
   nextVanBan() {

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AeFormComponent, createContainer, createDatePicker, createDropdown, createTable, createTextBox, IFormField, ObjectType } from '@super-app/shared';
 import { Apollo, gql } from 'apollo-angular';
-import { StreamingService } from '../../services/streaming.service';
 
 @Component({
   selector: 'app-public',
@@ -47,16 +46,14 @@ export class PublicComponent implements OnInit {
   ];
   formData: ObjectType = {};
   constructor(
-    private readonly _apollo: Apollo,
-    private readonly _streamingService: StreamingService
+    private readonly _apollo: Apollo
   ) {
   }
   ngOnInit() {
-    console.log('public comp');
     this._apollo.watchQuery({
       query: gql`
       {
-        city(code: "NY") { 
+        city(code: "NY") {
           id
           name
         }
@@ -73,30 +70,21 @@ export class PublicComponent implements OnInit {
     }).valueChanges.subscribe({
       next: (response) => {
         const data = <any>response.data;
-        // Xử lý city
-        const city = data.city;
-        console.log("City:", city);
-
-        // Xử lý villages (nếu có)
-        const villages = data.villages;
-        console.log("Villages:", villages);
-
-        // Xử lý allVillages (streaming, sẽ trả dữ liệu dần dần)
-        const allVillages = data.allVillages;
-        allVillages.forEach((village: any) => {
-          console.log("Village (streamed):", village);
-        });
+        // Process response data as needed
+        if (data.city) {
+          // Handle city data
+        }
+        if (data.villages) {
+          // Handle villages data
+        }
+        if (data.allVillages) {
+          // Handle all villages data
+        }
       },
       error: (err) => {
         console.error("Error:", err);
       },
     });
-    // .valueChanges.subscribe((result: any) => {
-    //   console.log(result);
-    // });
-    // this._streamingService.getStream().subscribe(ob => {
-    //   console.log(ob);
-    // });
   }
 
   addSchema() {

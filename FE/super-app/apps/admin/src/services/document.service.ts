@@ -1,16 +1,17 @@
-// streaming.service.ts
+// document.service.ts
 import { Injectable } from '@angular/core';
 import { BaseService } from '@super-app/shared';
 import { Observable } from 'rxjs';
+import { buildApiUrl, API_CONSTANTS } from '../app/constants/api.constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DocumentService extends BaseService {
-  private readonly baseUrl = 'http://localhost:5001/documents';
+  private readonly baseUrl = buildApiUrl(API_CONSTANTS.ENDPOINTS.DOCUMENTS);
 
   constructor() {
-    super('http://localhost:5001/documents');
+    super(buildApiUrl(API_CONSTANTS.ENDPOINTS.DOCUMENTS));
   }
 
   /**

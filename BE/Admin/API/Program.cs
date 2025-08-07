@@ -1,11 +1,5 @@
-﻿using API.Test;
-using Application.Extensions;
+﻿using Application.Extensions;
 using Infrastructure;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Shared;
 
 var builder = WebApplication.CreateBuilder(args);

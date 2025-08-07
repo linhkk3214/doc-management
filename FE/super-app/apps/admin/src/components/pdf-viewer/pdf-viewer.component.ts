@@ -1,4 +1,12 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  inject,
+  Input,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { DocumentService } from '../../services/document.service';
@@ -14,11 +22,13 @@ export interface DocumentViewData {
 @Component({
   selector: 'app-pdf-viewer',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, PdfViewerModule],
   templateUrl: './pdf-viewer.component.html',
   styleUrls: ['./pdf-viewer.component.scss'],
 })
 export class PdfViewerComponent implements OnInit, OnDestroy {
+  private cdr = inject(ChangeDetectorRef);
   @Input()
   set document(value: any) {
     this._document = value;
@@ -74,6 +84,7 @@ export class PdfViewerComponent implements OnInit, OnDestroy {
           blob.arrayBuffer().then((arrayBuffer) => {
             this.pdfSrc = new Uint8Array(arrayBuffer);
             this.loading = false;
+            this.cdr.detectChanges();
           });
         },
         error: (error) => {
