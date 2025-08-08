@@ -12,7 +12,7 @@
             {{settingsVal.title}}
             }
         </div>
-        <div>
+        <div class="flex direction-row">
             <!-- <p-button icon="pi pi-plus" [label]="'add' | translate" class="cursor-pointer" text="true"
                 severity="success" (click)="emitEvent('add')"></p-button> -->
             @if (settingsVal.allowImport)
@@ -24,6 +24,10 @@
                 [label]="('delete' | translate) + (selectedItems.length ? ' (' + selectedItems.length + ')' : '')"
                 class="cursor-pointer" text="true" [disabled]="!selectedItems.length" severity="danger"
                 (click)="emitEvent('deletes', selectedItems)"></p-button> -->
+
+            @if (buttonTopTemplate){
+            <ng-container [ngTemplateOutlet]="buttonTopTemplate"></ng-container>
+            }
         </div>
     </ng-template>
     <ng-template #colgroup>

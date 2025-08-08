@@ -13,6 +13,11 @@ export const routes: Routes = [
     //canMatch: mapToCanMatch([AuthorizationGuard]),
     children: [
       {
+        path: '',
+        redirectTo: 'ho-so',
+        pathMatch: 'full'
+      },
+      {
         path: 'van-ban',
         component: DocumentComponent
       },

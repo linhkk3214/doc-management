@@ -40,6 +40,7 @@ namespace Admin.Controllers
       item.Title = model.Title;
       item.DocumentSymbol = model.DocumentSymbol;
       item.DocumentNumber = model.DocumentNumber;
+      item.SoKyHieu = $"{model.DocumentNumber}/{model.DocumentSymbol}";
       item.IssuingAgency = model.IssuingAgency;
       item.SignedDate = model.SignedDate;
       item.DocumentTypeId = model.DocumentTypeId;

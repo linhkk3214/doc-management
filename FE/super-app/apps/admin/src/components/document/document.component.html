@@ -1,18 +1,15 @@
 <ae-crud (import)="triggerFileInput()">
   <!-- Custom toolbar with import progress -->
-  <ng-container toolbar>
-    <div class="flex align-items-center gap-2">
-      <p-button label="Tải template" icon="pi pi-download" severity="secondary" size="small"
-        (onClick)="downloadTemplate()"></p-button>
-
+  <ng-template #buttonTop>
+    <div class="flex items-center gap-2">
       @if (importing()) {
-      <div class="import-progress flex align-items-center gap-2">
+      <div class="import-progress flex items-center gap-2">
         <p-progressBar [value]="importProgress()" [showValue]="false" styleClass="w-20rem"></p-progressBar>
         <span class="text-sm">{{ importMessage() }}</span>
       </div>
       }
     </div>
-  </ng-container>
+  </ng-template>
 </ae-crud>
 
 <!-- Toast notifications -->

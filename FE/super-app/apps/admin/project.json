@@ -89,6 +89,14 @@
     },
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
+      "options": {
+        "host": "0.0.0.0",
+        "port": 4200,
+        "allowedHosts": [
+          "*",
+          "15535aab40a9.ngrok-free.app"
+        ]
+      },
       "configurations": {
         "production": {
           "buildTarget": "admin:build:production"
