@@ -26,10 +26,10 @@ namespace Domain.Entities
         [Required]
         public int DocumentNumber { get; set; } // Số văn bản
         
-        [Required]
         [StringLength(100)]
         public string DocumentSymbol { get; set; } = string.Empty; // Ký hiệu văn bản
-        
+        public string SoKyHieu { get; set; } = string.Empty; // Số ký hiệu
+
         [Required]
         [StringLength(500)]
         public string IssuingAgency { get; set; } = string.Empty; // Cơ quan ban hành

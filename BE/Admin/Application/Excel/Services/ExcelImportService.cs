@@ -3,6 +3,7 @@ using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
 using Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
 using Shared.Classes;
@@ -53,17 +54,17 @@ namespace Application.Excel.Services
         public async Task<ExcelImportResult> ImportDocumentsFromExcelAsync(Stream excelStream)
         {
             var result = new ExcelImportResult();
-            
+
             try
             {
                 // Set EPPlus license for non-commercial use
 #pragma warning disable CS0618 // Type or member is obsolete
                 ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 #pragma warning restore CS0618 // Type or member is obsolete
-                
+
                 using var package = new ExcelPackage(excelStream);
                 var worksheet = package.Workbook.Worksheets.FirstOrDefault();
-                
+
                 if (worksheet == null)
                 {
                     result.Errors.Add("Không tìm thấy sheet nào trong file Excel");
@@ -72,7 +73,7 @@ namespace Application.Excel.Services
 
                 // Parse Excel rows
                 var excelRows = ParseExcelRows(worksheet);
-                
+
                 if (!excelRows.Any())
                 {
                     result.Errors.Add("Không có dữ liệu để import");
@@ -87,7 +88,7 @@ namespace Application.Excel.Services
 
                 // Step 2-4: Create all data using bulk operations with transaction
                 using var transaction = await _dbContext.Database.BeginTransactionAsync();
-                
+
                 try
                 {
                     var createdPhongs = await CreatePhongsAsync(uniquePhongs);
@@ -95,23 +96,33 @@ namespace Application.Excel.Services
                     var createdLoaiVanBans = await CreateLoaiVanBansAsync(uniqueLoaiVanBans);
 
                     // Step 3: Create portfolios using bulk operations
-                    var createdPortfolios = new Dictionary<string, Portfolio>();
                     var portfoliosToCreate = new List<Portfolio>();
-                    
+
+                    var lstMaHoSo = uniquePortfolios.Select(p => p.HoSoSo).Distinct().ToList();
+                    // Loại bỏ các hồ sơ đã có
+                    var existingMaHoSo = await _dbContext.Portfolios.Where(p => lstMaHoSo.Contains(p.Code))
+                            .Select(p => new
+                            {
+                                p.Code,
+                                p.Id
+                            }).ToListAsync();
+                    var dicHoSo = existingMaHoSo.ToDictionary(p => p.Code, p => p.Id);
+
                     foreach (var portfolioData in uniquePortfolios)
                     {
                         try
                         {
-                            var phong = createdPhongs.FirstOrDefault(p => 
+                            if (dicHoSo.ContainsKey(portfolioData.HoSoSo)) continue;
+                            var phong = createdPhongs.FirstOrDefault(p =>
                                 p.Ten.Equals(portfolioData.TenPhong, StringComparison.OrdinalIgnoreCase) ||
                                 (!string.IsNullOrEmpty(portfolioData.PhongSo) && p.Ma.Equals(portfolioData.PhongSo, StringComparison.OrdinalIgnoreCase)));
-                            
-                            var nhiemKy = createdNhiemKys.FirstOrDefault(n => 
+
+                            var nhiemKy = createdNhiemKys.FirstOrDefault(n =>
                                 n.Ten.Equals(portfolioData.NhiemKy, StringComparison.OrdinalIgnoreCase));
-                            
+
                             if (phong == null || nhiemKy == null)
                             {
-                                result.Errors.Add($"Không tìm thấy phông hoặc nhiệm kỳ cho portfolio {portfolioData.TieuDeHoSo}");
+                                result.Errors.Add($"Không tìm thấy phông hoặc nhiệm kỳ cho hồ sơ {portfolioData.TieuDeHoSo}");
                                 continue;
                             }
 
@@ -124,8 +135,8 @@ namespace Application.Excel.Services
                                 BoxNumber = portfolioData.HopSo,
                                 Code = portfolioData.HoSoSo,
                                 Name = portfolioData.TieuDeHoSo,
-                                StartDate = portfolioData.NgayBatDau != null ? DateTime.SpecifyKind(portfolioData.NgayBatDau.Value, DateTimeKind.Utc): null,
-                                EndDate = portfolioData.NgayKetThuc != null ? DateTime.SpecifyKind(portfolioData.NgayKetThuc.Value, DateTimeKind.Utc): null,
+                                StartDate = portfolioData.NgayBatDau != null ? DateTime.SpecifyKind(portfolioData.NgayBatDau.Value, DateTimeKind.Utc) : null,
+                                EndDate = portfolioData.NgayKetThuc != null ? DateTime.SpecifyKind(portfolioData.NgayKetThuc.Value, DateTimeKind.Utc) : null,
                                 OriginalAddress = portfolioData.DiaChiTaiLieuGoc,
                                 OriginalPath = portfolioData.PathGoc,
                                 RetentionPeriod = ParseRetentionPeriod(portfolioData.ThoiHanBaoQuan),
@@ -133,9 +144,8 @@ namespace Application.Excel.Services
                                 Deleted = false
                             };
 
-                            var portfolioKey = $"{portfolioData.TenPhong}_{portfolioData.PhongSo}_{portfolioData.NhiemKy}_{portfolioData.HoSoSo}_{portfolioData.TieuDeHoSo}";
                             portfoliosToCreate.Add(portfolio);
-                            createdPortfolios[portfolioKey] = portfolio;
+                            dicHoSo[portfolio.Code] = portfolio.Id;
                         }
                         catch (Exception ex)
                         {
@@ -155,19 +165,31 @@ namespace Application.Excel.Services
                     // Step 4: Create documents using bulk operations
                     var documentsToCreate = new List<Document>();
 
+                    var lstDocumentRow = new List<ExcelDocumentRow>();
+                    var lstSoKyHieu = new List<string>();
+
                     foreach (var documentRow in excelRows.Where(r => r.IsDocument))
+                    {
+                        lstDocumentRow.Add(documentRow);
+                        lstSoKyHieu.Add(documentRow.SoKyHieu);
+                    }
+
+                    var existingSoKyHieu = await _dbContext.Documents.Where(d => lstSoKyHieu.Contains(d.SoKyHieu))
+                            .Select(d => d.SoKyHieu)
+                            .ToListAsync();
+
+                    foreach (var documentRow in lstDocumentRow)
                     {
                         try
                         {
-                            var portfolioKey = $"{documentRow.TenPhong}_{documentRow.PhongSo}_{documentRow.NhiemKy}_{documentRow.HoSoSo}_{documentRow.TieuDeHoSo}";
-                            
-                            if (createdPortfolios.TryGetValue(portfolioKey, out var portfolio))
+                            if (dicHoSo.TryGetValue(documentRow.HoSoSo, out var portfolioId))
                             {
+                                if (existingSoKyHieu.Contains(documentRow.SoKyHieu)) continue;
                                 // Get DmLoaiVanBan from the available list
                                 Domain.Entities.DmLoaiVanBan? loaiVB = null;
                                 if (!string.IsNullOrEmpty(documentRow.TheLoaiVanBan))
                                 {
-                                    loaiVB = createdLoaiVanBans.FirstOrDefault(l => 
+                                    loaiVB = createdLoaiVanBans.FirstOrDefault(l =>
                                         l.Ten.Equals(documentRow.TheLoaiVanBan, StringComparison.OrdinalIgnoreCase) ||
                                         (!string.IsNullOrEmpty(documentRow.KyHieuLoaiVanBan) && l.Ma.Equals(documentRow.KyHieuLoaiVanBan, StringComparison.OrdinalIgnoreCase)));
                                 }
@@ -175,15 +197,16 @@ namespace Application.Excel.Services
                                 var document = new Document
                                 {
                                     Id = Guid.NewGuid(),
-                                    PortfolioId = portfolio.Id,
+                                    PortfolioId = portfolioId,
                                     DocumentTypeId = loaiVB?.Id ?? Guid.Empty,
                                     Title = !string.IsNullOrEmpty(documentRow.TrichYeu) ? documentRow.TrichYeu : "Không có tiêu đề",
                                     Summary = documentRow.TrichYeu,
                                     DocumentNumber = documentRow.SoVanBan,
                                     DocumentSymbol = documentRow.KyHieuVanBan,
+                                    SoKyHieu = documentRow.SoKyHieu,
                                     IssuingAgency = documentRow.CoQuanBanHanh,
                                     SequenceNumber = documentRow.SoThuTuTrongHoSo,
-                                    SignedDate = documentRow.NgayKy != null ? DateTime.SpecifyKind(documentRow.NgayKy.Value, DateTimeKind.Utc): null,
+                                    SignedDate = documentRow.NgayKy != null ? DateTime.SpecifyKind(documentRow.NgayKy.Value, DateTimeKind.Utc) : null,
                                     Signer = documentRow.NguoiKy,
                                     DocumentFormat = ParseDocumentFormat(documentRow.LoaiBan),
                                     PageCount = documentRow.SoLuongTrangVanBan,
@@ -230,7 +253,7 @@ namespace Application.Excel.Services
                 }
 
                 result.Success = result.ImportedDocuments > 0;
-                result.Message = result.Success 
+                result.Message = result.Success
                     ? $"Import thành công {result.ImportedDocuments} documents từ {result.ImportedPortfolios} portfolios"
                     : "Không có dữ liệu nào được import";
 
@@ -520,7 +543,7 @@ namespace Application.Excel.Services
         private int ParseRetentionPeriod(string thoiHan)
         {
             if (string.IsNullOrEmpty(thoiHan)) return 0;
-            
+
             // Try to extract number from string
             var numbers = new string(thoiHan.Where(char.IsDigit).ToArray());
             return int.TryParse(numbers, out int result) ? result : 0;
@@ -529,18 +552,18 @@ namespace Application.Excel.Services
         private int ParseDocumentFormat(string loaiBan)
         {
             if (string.IsNullOrEmpty(loaiBan)) return 1;
-            
+
             loaiBan = loaiBan.ToLower().Trim();
             if (loaiBan.Contains("chính") || loaiBan.Contains("gốc")) return 1; // Bản chính
             if (loaiBan.Contains("sao") || loaiBan.Contains("copy")) return 2; // Bản sao
-            
+
             return 1; // Default to bản chính
         }
 
         private bool IsDocumentCopy(string loaiBan)
         {
             if (string.IsNullOrEmpty(loaiBan)) return false;
-            
+
             loaiBan = loaiBan.ToLower().Trim();
             return loaiBan.Contains("sao") || loaiBan.Contains("copy");
         }
@@ -551,7 +574,7 @@ namespace Application.Excel.Services
 #pragma warning disable CS0618 // Type or member is obsolete
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 #pragma warning restore CS0618 // Type or member is obsolete
-            
+
             using var package = new ExcelPackage();
             var worksheet = package.Workbook.Worksheets.Add("Template");
 
@@ -627,19 +650,19 @@ namespace Application.Excel.Services
         private DateTime? GetCellDateValue(ExcelWorksheet worksheet, int row, int col)
         {
             var cellValue = worksheet.Cells[row, col].Value;
-            
+
             if (cellValue == null) return null;
-            
+
             // If it's already a DateTime
             if (cellValue is DateTime dateTime)
                 return dateTime;
-            
+
             // Try to parse as string
             var stringValue = cellValue.ToString()?.Trim();
             if (string.IsNullOrEmpty(stringValue)) return null;
             if (DateTime.TryParse(stringValue, vietNameseCulture, DateTimeStyles.None, out DateTime result))
                 return result;
-                
+
             return null;
         }
 

@@ -64,6 +64,11 @@ namespace Application.Excel.DTOs
         
         // Cột T: Ký hiệu của văn bản 
         public string KyHieuVanBan { get; set; } = string.Empty;
+
+        public string SoKyHieu
+        {
+            get => $"{SoVanBan}/{KyHieuVanBan}";
+        }
         
         // Cột X: Ngày ký 
         public DateTime? NgayKy { get; set; }

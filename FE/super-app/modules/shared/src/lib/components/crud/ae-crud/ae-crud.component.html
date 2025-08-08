@@ -2,8 +2,9 @@
 {
 <div class="p-2 h-full">
     <ae-list [columns]="settings.schemas" [listData]="dataSourceSignal()" [settings]="settingsSignal()"
-        [pageSize]="settings.pageSetting.pageSize" [loading]="loading()"
-        [offline]="settingsSignal().baseService == null" (execute)="handleListEvent($event)"></ae-list>
+        [pageSize]="settings.pageSetting.pageSize" [loading]="loading()" [buttonTopTemplate]="buttonTopTemplate"
+        [offline]="settingsSignal().baseService == null" (execute)="handleListEvent($event)">
+    </ae-list>
 </div>
 @if (showForm){
 <p-dialog [(visible)]="showForm" [modal]="true" [style]="{ width: '700px', height: '550px' }" [focusOnShow]="false">

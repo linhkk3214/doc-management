@@ -2,11 +2,13 @@ import { CommonModule, DecimalPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  ContentChild,
   EventEmitter,
   Input,
   OnInit,
   Output,
   signal,
+  TemplateRef,
   Type,
 } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
@@ -65,6 +67,8 @@ export class AeCrudComponent implements OnInit {
   showForm = false;
   #cachedFields = '';
   selectedRowItem: ObjectType | undefined = {};
+
+  @ContentChild('buttonTop', { static: true }) buttonTopTemplate?: TemplateRef<any>;
 
   @Output() import = new EventEmitter<any>();
   @Output() edit = new EventEmitter<any>();

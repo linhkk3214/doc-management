@@ -7,6 +7,7 @@ import {
   ContentChild,
   effect,
   inject,
+  Input,
   input,
   OnInit,
   output,
@@ -113,6 +114,8 @@ export class AeListComponent implements OnInit, AfterViewChecked {
   inlineTemplateCheckbox!: TemplateRef<any>;
   @ViewChild('table', { static: true }) table!: Table;
   @ViewChild('paginator') paginator!: Paginator;
+
+  @Input() buttonTopTemplate?: TemplateRef<any>;
 
   //#region User define
   @ContentChild('caption', { static: true }) caption?: TemplateRef<any>;
