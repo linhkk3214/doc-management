@@ -398,6 +398,12 @@ export class PortfolioComponent extends AeCrud implements OnInit {
     this.selectedVanBan = undefined;
   }
 
+  handleVisibleChanged() {
+    if (!this.showFileViewDialog) {
+      this.closeFileViewDialog();
+    }
+  }
+
   closeFileViewDialog() {
     this.showFileViewDialog = false;
     this.activeTab = 0;

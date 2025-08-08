@@ -13,7 +13,7 @@
 </ae-crud>
 @if (showFileViewDialog){
 <p-dialog [(visible)]="showFileViewDialog" [modal]="true" [style]="{ width: '100%', height: '100%' }"
-    [focusOnShow]="false" (onHide)="closeFileViewDialog()">
+    [focusOnShow]="false" (visibleChange)="handleVisibleChanged()">
     <ng-template #header>
         <div>Sửa bản ghi</div>
     </ng-template>
