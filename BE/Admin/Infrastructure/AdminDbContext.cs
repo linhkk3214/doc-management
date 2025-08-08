@@ -131,6 +131,7 @@ public partial class AdminDbContext : DbContext
             entity.Property(e => e.Title).HasMaxLength(1000);
             entity.Property(e => e.Summary).HasMaxLength(2000);
             entity.Property(e => e.DocumentSymbol).HasMaxLength(100);
+            entity.Property(e => e.SoKyHieu).HasMaxLength(200);
             entity.Property(e => e.IssuingAgency).HasMaxLength(500);
             entity.Property(e => e.Signer).HasMaxLength(200);
             entity.Property(e => e.OriginalAddress).HasMaxLength(1000);
