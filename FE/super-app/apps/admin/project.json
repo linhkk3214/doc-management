@@ -93,9 +93,12 @@
         "host": "0.0.0.0",
         "port": 4200,
         "allowedHosts": [
-          "*",
-          "15535aab40a9.ngrok-free.app"
-        ]
+          "localhost",
+          "127.0.0.1",
+          "10.10.10.45",
+          "ocr-app.csharpp.com"
+        ],
+        "proxyConfig": "apps/admin/proxy.conf.json"
       },
       "configurations": {
         "production": {

@@ -39,7 +39,7 @@ export const appConfig: ApplicationConfig = {
     }),
     provideAuth({
       config: {
-        authority: 'https://localhost:6996',
+        authority: 'https://ocr-app-api.csharpp.com',
         redirectUrl: window.location.origin,
         postLogoutRedirectUri: window.location.origin + '/public',
         clientId: 'angular-client',

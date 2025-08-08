@@ -18,8 +18,8 @@ export class DocumentService extends BaseService {
    * Get file blob for viewing (opens file in browser)
    */
   viewFile(documentId: string): Observable<Blob> {
-    return this._http.get(`${this.baseUrl}/${documentId}/file`, { 
-      responseType: 'blob' 
+    return this._http.get(`${this.baseUrl}/${documentId}/file`, {
+      responseType: 'blob'
     });
   }
 
@@ -34,8 +34,8 @@ export class DocumentService extends BaseService {
    * Download file (forces download with filename)
    */
   downloadFile(documentId: string): Observable<Blob> {
-    return this._http.get(`${this.baseUrl}/${documentId}/download`, { 
-      responseType: 'blob' 
+    return this._http.get(`${this.baseUrl}/${documentId}/download`, {
+      responseType: 'blob'
     });
   }
 

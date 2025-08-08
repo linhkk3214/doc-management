@@ -1,18 +1,43 @@
-// apps/your-angular-app/vite.config.ts
 import { defineConfig } from 'vite';
-import angular from '@analogjs/vite-plugin-angular'; // nếu bạn dùng Analog hoặc Angular với Vite
+import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 
 export default defineConfig({
-  plugins: [angular()],
+  root: __dirname,
+  cacheDir: '../../node_modules/.vite/apps/admin',
+  
   server: {
-    host: '0.0.0.0', // Cho phép truy cập từ tất cả các địa chỉ IP
-    port: 4200, // Đặt port cố định
-    strictPort: true, // Không tự động đổi port nếu port này đã được sử dụng
-    cors: true, // Bật CORS
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-      'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization',
+    port: 4200,
+    host: '0.0.0.0',
+    hmr: {
+      host: 'localhost'
+    },
+    proxy: {
+      '/api': {
+        target: 'https://ocr-app-api.csharpp.com',
+        changeOrigin: true,
+        secure: true
+      }
+    }
+  },
+  
+  preview: {
+    port: 4300,
+    host: 'localhost',
+  },
+  
+  plugins: [nxViteTsPaths()],
+  
+  // Uncomment this if you are using workers.
+  // worker: {
+  //  plugins: [ nxViteTsPaths() ],
+  // },
+  
+  build: {
+    outDir: '../../dist/apps/admin',
+    emptyOutDir: true,
+    reportCompressedSize: true,
+    commonjsOptions: {
+      transformMixedEsModules: true,
     },
   },
 });

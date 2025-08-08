@@ -1,0 +1,8 @@
+{
+  "/api/*": {
+    "target": "https://ocr-app-api.csharpp.com",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}
