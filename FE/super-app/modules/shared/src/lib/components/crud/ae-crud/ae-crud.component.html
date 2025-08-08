@@ -16,9 +16,9 @@
         </ae-form>
     </ae-scrollbar>
     <ng-template #footer>
-        <p-button label="Cancel" icon="pi pi-times" [text]="true" variant="text" severity="secondary"
+        <p-button label="Lưu" icon="pi pi-check" [text]="true" [autofocus]="false" severity="success" />
+        <p-button label="Đóng" icon="pi pi-times" [text]="true" variant="text" severity="secondary"
             (onClick)="showForm = false" />
-        <p-button label="Save" icon="pi pi-check" [text]="true" [autofocus]="false" severity="success" />
     </ng-template>
 </p-dialog>
 }

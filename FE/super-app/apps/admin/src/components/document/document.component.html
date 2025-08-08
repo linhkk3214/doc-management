@@ -56,10 +56,10 @@
     }
   </div>
   <ng-template #footer>
-    <p-button label="Cancel" icon="pi pi-times" [text]="true" variant="text" severity="secondary"
-      (onClick)="showFileViewDialog = false" />
-    <p-button label="Save" icon="pi pi-check" [text]="true" [autofocus]="false" severity="success"
+    <p-button label="Lưu" icon="pi pi-check" [text]="true" [autofocus]="false" severity="success"
       (onClick)="saveData()" />
+    <p-button label="Đóng" icon="pi pi-times" [text]="true" variant="text" severity="secondary"
+      (onClick)="showFileViewDialog = false" />
   </ng-template>
 </p-dialog>
 }
