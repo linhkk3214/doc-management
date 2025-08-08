@@ -32,8 +32,8 @@ export class AppComponent implements OnInit {
   static INJECTOR: Injector;
   user: { fullName: string } = { fullName: 'Đinh Hải Linh' };
   menus: MenuItem[] = [
-    { name: 'Hồ sơ', url: 'ho-so', icon: 'user' },
-    { name: 'Văn bản', url: 'van-ban', icon: 'bitcoin' },
+    { name: 'Hồ sơ', url: 'ho-so', icon: 'folder' },
+    // { name: 'Văn bản', url: 'van-ban', icon: 'bitcoin' },
   ];
   localizations = [
     { value: 'vi-VN', label: 'VN' },

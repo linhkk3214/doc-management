@@ -1,26 +1,72 @@
-<ae-crud>
+<ae-crud (import)="triggerFileInput()">
+    <!-- Custom toolbar with import progress -->
+    <ng-template #buttonTop>
+        <div class="flex items-center gap-2">
+            @if (importing()) {
+            <div class="import-progress flex items-center gap-2">
+                <p-progressBar [value]="importProgress()" [showValue]="false" styleClass="w-20rem"></p-progressBar>
+                <span class="text-sm">{{ importMessage() }}</span>
+            </div>
+            }
+        </div>
+    </ng-template>
 </ae-crud>
 @if (showFileViewDialog){
 <p-dialog [(visible)]="showFileViewDialog" [modal]="true" [style]="{ width: '100%', height: '100%' }"
-    [focusOnShow]="false">
+    [focusOnShow]="false" (onHide)="closeFileViewDialog()">
     <ng-template #header>
         <div>Sửa bản ghi</div>
     </ng-template>
     <div class="flex flex-row h-full">
         <div class="flex-1">
             <ae-scrollbar>
+                @if (!selectedVanBan) {
                 <app-pdf-viewer-hoso [document]="selectedDocument">
                 </app-pdf-viewer-hoso>
+                }
+                @else{
+                <app-pdf-viewer [document]="selectedVanBan">
+                </app-pdf-viewer>
+                }
             </ae-scrollbar>
         </div>
         @if (selectedDocument)
         {
         <div style="width: 30%">
-            <ae-scrollbar>
-                <ae-form [schemas]="settings.schemas" [data]="selectedDocument" (changed)="handleFormChanged($event)">
-                </ae-form>
-                <check-rendered></check-rendered>
-            </ae-scrollbar>
+            <p-tabs #tabs value="0" style="height: 100%; overflow: hidden" [value]="activeTab">
+                <p-tablist>
+                    <p-tab [value]="0" (click)="handleViewHoSo()">Chi tiết</p-tab>
+                    <p-tab [value]="1">Cùng bộ hồ sơ</p-tab>
+                    @if (selectedVanBan)
+                    {
+                    <p-tab [value]="2">Chi tiết văn bản</p-tab>
+                    }
+                </p-tablist>
+                <p-tabpanels style="height: 100%; overflow: hidden">
+                    <p-tabpanel [value]="0">
+                        <ae-scrollbar>
+                            <ae-form [schemas]="settings.schemas" [data]="selectedDocument"
+                                (changed)="handleFormChanged($event)">
+                            </ae-form>
+                        </ae-scrollbar>
+                    </p-tabpanel>
+                    <p-tabpanel [value]="1">
+                        <ae-scrollbar>
+                            <ae-list [columns]="vanBanLienQuanSettings().schemas" [listData]="vanBanLienQuan()"
+                                [settings]="vanBanLienQuanSettings()" [pageSize]="-1" [loading]="false" [offline]="true"
+                                (execute)="handleVBLQListEvent($event)"></ae-list>
+                        </ae-scrollbar>
+                    </p-tabpanel>
+                    <p-tabpanel [value]="2">
+                        <ae-scrollbar>
+                            <ae-form [schemas]="settingsVanBan.schemas" [data]="selectedVanBan"
+                                (changed)="handleFormChanged($event)">
+                            </ae-form>
+                        </ae-scrollbar>
+                    </p-tabpanel>
+                </p-tabpanels>
+            </p-tabs>
+
         </div>
         }
     </div>
@@ -28,7 +74,7 @@
         <p-button label="Lưu" icon="pi pi-check" [text]="true" [autofocus]="false" severity="success"
             (onClick)="saveData()" />
         <p-button label="Đóng" icon="pi pi-times" [text]="true" variant="text" severity="secondary"
-            (onClick)="showFileViewDialog = false" />
+            (onClick)="closeFileViewDialog()" />
     </ng-template>
 </p-dialog>
 }

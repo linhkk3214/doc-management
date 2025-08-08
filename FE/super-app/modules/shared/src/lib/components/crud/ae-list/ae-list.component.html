@@ -1,7 +1,7 @@
 <p-table #table [value]="data" styleClass="ae-list" [(selection)]="selectedItems" [dataKey]="settingsVal.entityKey"
     [selectionMode]="settingsVal.selectionMode" [showGridlines]="true" stripedRows [paginator]="settingsVal.paginator"
     [customSort]="true" (sortFunction)="customSort($event)" [sortMode]="settingsVal.sortMode"
-    (onRowSelect)="handleRowSelect($event)">
+    (onRowSelect)="handleRowSelect($event)" (onRowUnselect)="handleRowUnselect($event)">
     <ng-template #caption>
         <div class="table-title">
             @if(this.caption)

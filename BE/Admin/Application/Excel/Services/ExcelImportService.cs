@@ -125,7 +125,9 @@ namespace Application.Excel.Services
                                 result.Errors.Add($"Không tìm thấy phông hoặc nhiệm kỳ cho hồ sơ {portfolioData.TieuDeHoSo}");
                                 continue;
                             }
-
+                            string path = portfolioData.PathGoc;
+                            // Loại bỏ path cuối trong đường dẫn (Đường dẫn có thể theo format / hoặc \\)
+                            path = path.Split(new char[] { '/', '\\' }).SkipLast(1).Aggregate((a, b) => a + "\\" + b);
                             var portfolio = new Portfolio
                             {
                                 Id = Guid.NewGuid(),
@@ -138,7 +140,7 @@ namespace Application.Excel.Services
                                 StartDate = portfolioData.NgayBatDau != null ? DateTime.SpecifyKind(portfolioData.NgayBatDau.Value, DateTimeKind.Utc) : null,
                                 EndDate = portfolioData.NgayKetThuc != null ? DateTime.SpecifyKind(portfolioData.NgayKetThuc.Value, DateTimeKind.Utc) : null,
                                 OriginalAddress = portfolioData.DiaChiTaiLieuGoc,
-                                OriginalPath = portfolioData.PathGoc,
+                                OriginalPath = path,
                                 RetentionPeriod = ParseRetentionPeriod(portfolioData.ThoiHanBaoQuan),
                                 Created = DateTime.UtcNow,
                                 Deleted = false

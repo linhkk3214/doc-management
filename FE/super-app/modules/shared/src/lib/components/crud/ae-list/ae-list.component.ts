@@ -591,6 +591,7 @@ export class AeListComponent implements OnInit, AfterViewChecked {
 
   handleRowUnselect(evt: TableRowUnSelectEvent<ObjectType>) {
     this.check(evt.index, false);
+    this.emitEvent('unselect-row', evt.data);
   }
 
   check(index: number | undefined, checked: boolean) {
@@ -1161,7 +1162,8 @@ type ListEventType =
   | 'delete'
   | 'deletes'
   | 'import'
-  | 'select-row';
+  | 'select-row'
+  | 'unselect-row';
 
 class ColumnSetting {
   field: string;
