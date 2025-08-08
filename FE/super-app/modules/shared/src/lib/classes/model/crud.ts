@@ -220,16 +220,23 @@ export class Filter {
                 if (fields.has(element.field)) {
                     const value = this.getFilterValue(dicValue[element.field], element);
                     if (value !== undefined) {
+                        let field = element.field
+                        if (field.endsWith(Filter.fromPrefix)) {
+                            field = field.slice(0, -Filter.fromPrefix.length);
+                        }
+                        else if (field.endsWith(Filter.toPrefix)) {
+                            field = field.slice(0, -Filter.toPrefix.length);
+                        }
                         element.value = JSON.stringify(value);
                         switch (element.operator) {
                             case FilterOperator.isTrue:
-                                result.push(new Filter(element.field, value ? FilterOperator.isTrue : FilterOperator.isFalse, element.value));
+                                result.push(new Filter(field, value ? FilterOperator.isTrue : FilterOperator.isFalse, element.value));
                                 break;
                             case FilterOperator.isFalse:
-                                result.push(new Filter(element.field, value ? FilterOperator.isFalse : FilterOperator.isTrue, element.value));
+                                result.push(new Filter(field, value ? FilterOperator.isFalse : FilterOperator.isTrue, element.value));
                                 break;
                             default:
-                                result.push(new Filter(element.field, element.operator, element.value));
+                                result.push(new Filter(field, element.operator, element.value));
                                 break;
                         }
                     }
