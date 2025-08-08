@@ -679,13 +679,6 @@ export class AeListComponent implements OnInit, AfterViewChecked {
 
   correctSearchValueAndSearch(field: string) {
     const currentSearchValue = this.dicSearchValue[field];
-    if (
-      currentSearchValue === null ||
-      currentSearchValue === '' ||
-      (Array.isArray(currentSearchValue) && currentSearchValue.length == 0)
-    ) {
-      this.dicSearchValue[field] = undefined;
-    }
     if (this.#previousSearchValue !== currentSearchValue) {
       this.handleSearch(field);
       this.#previousSearchValue = currentSearchValue;
@@ -714,6 +707,14 @@ export class AeListComponent implements OnInit, AfterViewChecked {
   }
 
   handleSearch(field: string) {
+    const currentSearchValue = this.dicSearchValue[field];
+    if (
+      currentSearchValue === null ||
+      currentSearchValue === '' ||
+      (Array.isArray(currentSearchValue) && currentSearchValue.length == 0)
+    ) {
+      this.dicSearchValue[field] = undefined;
+    }
     const result: Filter[] = [];
     Filter.applyValue(
       this.templateFilters,
