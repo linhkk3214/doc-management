@@ -15,6 +15,7 @@ namespace Admin.Controllers
 {
   public class DocumentsController : BaseController<IDocumentsService, Document>
   {
+    private static readonly SemaphoreSlim _importSemaphore = new(1, 1);
     private readonly IExcelImportService _excelImportService;
     private readonly IDocumentsService _documentsService;
     private readonly IConfiguration _configuration;
@@ -58,43 +59,55 @@ namespace Admin.Controllers
     [HttpPost("import-excel")]
     public async Task<IActionResult> ImportFromExcel(IFormFile file)
     {
+      // Basic validation before acquiring lock
+      if (file == null || file.Length == 0)
+      {
+        return BadRequest(new ExcelImportResult
+        {
+          Success = false,
+          Message = "File không được để trống",
+          Errors = new List<string> { "Vui lòng chọn file Excel để import" }
+        });
+      }
+
+      // Validate file type
+      var allowedExtensions = new[] { ".xlsx", ".xls" };
+      var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+      
+      if (!allowedExtensions.Contains(fileExtension))
+      {
+        return BadRequest(new ExcelImportResult
+        {
+          Success = false,
+          Message = "Định dạng file không hợp lệ",
+          Errors = new List<string> { "Chỉ chấp nhận file Excel (.xlsx, .xls)" }
+        });
+      }
+
+      // Check file size (50MB limit)
+      if (file.Length > 50 * 1024 * 1024)
+      {
+        return BadRequest(new ExcelImportResult
+        {
+          Success = false,
+          Message = "File quá lớn",
+          Errors = new List<string> { "File không được vượt quá 50MB" }
+        });
+      }
+
+      // Check if another import is already in progress
+      if (!await _importSemaphore.WaitAsync(0))
+      {
+        return Conflict(new ExcelImportResult
+        {
+          Success = false,
+          Message = "Có một tiến trình import khác đang chạy",
+          Errors = new List<string> { "Vui lòng chờ tiến trình import hiện tại hoàn thành" }
+        });
+      }
+
       try
       {
-        if (file == null || file.Length == 0)
-        {
-          return BadRequest(new ExcelImportResult
-          {
-            Success = false,
-            Message = "File không được để trống",
-            Errors = new List<string> { "Vui lòng chọn file Excel để import" }
-          });
-        }
-
-        // Validate file type
-        var allowedExtensions = new[] { ".xlsx", ".xls" };
-        var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
-        
-        if (!allowedExtensions.Contains(fileExtension))
-        {
-          return BadRequest(new ExcelImportResult
-          {
-            Success = false,
-            Message = "Định dạng file không hợp lệ",
-            Errors = new List<string> { "Chỉ chấp nhận file Excel (.xlsx, .xls)" }
-          });
-        }
-
-        // Check file size (50MB limit)
-        if (file.Length > 50 * 1024 * 1024)
-        {
-          return BadRequest(new ExcelImportResult
-          {
-            Success = false,
-            Message = "File quá lớn",
-            Errors = new List<string> { "File không được vượt quá 50MB" }
-          });
-        }
-
         using var stream = file.OpenReadStream();
         var result = await _excelImportService.ImportDocumentsFromExcelAsync(stream);
         
@@ -108,6 +121,10 @@ namespace Admin.Controllers
           Message = "Có lỗi xảy ra trong quá trình import",
           Errors = new List<string> { ex.Message }
         });
+      }
+      finally
+      {
+        _importSemaphore.Release();
       }
     }
 

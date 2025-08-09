@@ -101,7 +101,7 @@ export class PortfolioComponent extends AeCrud implements OnInit {
     settings.schemas = [
       createTextBox('originalPath', {
         label: 'Đường dẫn',
-        columnWidth: '30%',
+        //columnWidth: '30%',
         hiddenInForm: true,
         layoutWidth: 12,
       }),
@@ -111,10 +111,12 @@ export class PortfolioComponent extends AeCrud implements OnInit {
         columnWidth: 100,
         placeholder: 'Nhập mã',
         searchPlaceholder: 'Tìm mã',
+        hiddenInList: true,
         layoutWidth: 12,
       }),
       createTextBox('name', {
         label: 'Tiêu đề',
+        hiddenInList: true,
         layoutWidth: 12,
       }),
       createDropdown('departmentId', {
@@ -132,12 +134,14 @@ export class PortfolioComponent extends AeCrud implements OnInit {
         columnWidth: 130,
         dataType: DataType.date,
         allowFilter: false,
+        hiddenInList: true,
         layoutWidth: 6,
       }),
       createDatePicker('endDate', {
         label: 'Ngày kết thúc',
         columnWidth: 130,
         allowFilter: false,
+        hiddenInList: true,
         layoutWidth: 6,
       }),
       createTextBox('thoiHanBaoQuan', {
@@ -146,6 +150,7 @@ export class PortfolioComponent extends AeCrud implements OnInit {
         fullLabel: 'Thời hạn bảo quản',
         allowFilter: false,
         hiddenInForm: true,
+        hiddenInList: true,
         layoutWidth: 12,
       }),
       createCheckbox('isVinhVien', {
