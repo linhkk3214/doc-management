@@ -59,7 +59,7 @@ namespace Admin.Controllers
         }
 
         var doc = document.Data;
-
+        var path = $"{doc.OriginalPath}\\BIA.pdf";
         // Check if file path exists
         if (string.IsNullOrEmpty(doc.OriginalPath))
         {
