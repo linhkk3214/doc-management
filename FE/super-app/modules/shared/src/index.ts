@@ -14,6 +14,7 @@ export * from './lib/directives/ae-translate-tooltip.directive';
 export * from './lib/services/base.service';
 export * from './lib/services/storage.service';
 export * from './lib/services/language.service';
+export * from './lib/services/event-bus.service';
 
 export * from './lib/theme/blue-preset';
 
