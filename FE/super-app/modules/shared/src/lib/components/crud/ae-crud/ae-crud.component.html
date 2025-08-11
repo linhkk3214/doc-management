@@ -1,24 +1,24 @@
-@if(settings)
+@if(settings())
 {
 <div class="p-2 h-full">
-    <ae-list [columns]="settings.schemas" [listData]="dataSourceSignal()" [settings]="settingsSignal()"
-        [pageSize]="settings.pageSetting.pageSize" [loading]="loading()" [buttonTopTemplate]="buttonTopTemplate"
-        [offline]="settingsSignal().baseService == null" (execute)="handleListEvent($event)">
+    <ae-list [columns]="settings()!.schemas" [listData]="dataSourceSignal()" [settings]="settings()!"
+        [pageSize]="settings()!.pageSetting.pageSize" [loading]="loading()" [buttonTopTemplate]="buttonTopTemplate"
+        [offline]="settings()!.baseService == null" (execute)="handleListEvent($event)">
     </ae-list>
 </div>
-@if (showForm){
+@if (showForm()){
 <p-dialog [(visible)]="showForm" [modal]="true" [style]="{ width: '700px', height: '550px' }" [focusOnShow]="false">
     <ng-template #header>
         <div>Sửa bản ghi</div>
     </ng-template>
     <ae-scrollbar>
-        <ae-form [schemas]="settings.schemas" [data]="selectedRowItem">
+        <ae-form [schemas]="settings()!.schemas" [data]="selectedRowItem() || {}" (dataChange)="selectedRowItem.set($event)" (changed)="handleFormChanged($event)">
         </ae-form>
     </ae-scrollbar>
     <ng-template #footer>
         <p-button label="Lưu" icon="pi pi-check" [text]="true" [autofocus]="false" severity="success" />
         <p-button label="Đóng" icon="pi pi-times" [text]="true" variant="text" severity="secondary"
-            (onClick)="showForm = false" />
+            (onClick)="showForm.set(false)" />
     </ng-template>
 </p-dialog>
 }

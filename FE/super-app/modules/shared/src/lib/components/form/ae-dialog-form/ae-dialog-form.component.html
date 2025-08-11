@@ -5,7 +5,7 @@
     </ng-template>
     <ae-scrollbar>
         <div style="height: 800px">
-            <ae-form [schemas]="settingsVal()?.schemas" [(model)]="model">
+            <ae-form [schemas]="settingsVal()?.schemas" [(data)]="data" (changed)="handleFormChanged($event)">
             </ae-form>
         </div>
     </ae-scrollbar>

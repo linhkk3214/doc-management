@@ -2,11 +2,12 @@ import { CommonModule, DecimalPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   ContentChild,
-  EventEmitter,
-  Input,
+  effect,
+  input,
   OnInit,
-  Output,
+  output,
   signal,
   TemplateRef,
   Type,
@@ -45,55 +46,73 @@ import { ListData } from '../../../interfaces/i-list-base';
   providers: [DecimalPipe],
 })
 export class AeCrudComponent implements OnInit {
-  @Input() formComponent!: Type<FormBase>;
-  @Input() set settings(value: CrudListSetting) {
-    if (value) {
-      if (!value.title) value.title = `Danh sách ${value.objectName}`;
-      this.cacheFields(value);
-      this.settingsSignal.set(value);
-    }
-  }
-  get settings() {
-    return this.settingsSignal();
-  }
-  settingsSignal = signal<CrudListSetting>(new CrudListSetting());
-  @Input() set dataSource(value: ObjectType[]) {
-    if (value) {
-      this.dataSourceSignal.set(new ListData<ObjectType>(value, value.length));
-    }
-  }
+  // Using signals for inputs
+  formComponent = input<Type<FormBase>>();
+  settings = input<CrudListSetting>();
+  dataSource = input<ObjectType[]>();
+  
+  // Internal signals
   dataSourceSignal = signal<ListData<ObjectType>>(new ListData([], 0));
   loading = signal<boolean>(false);
-  showForm = false;
+  showForm = signal<boolean>(false);
+  selectedRowItem = signal<ObjectType | undefined>({});
+  
   #cachedFields = '';
-  selectedRowItem: ObjectType | undefined = {};
 
   @ContentChild('buttonTop', { static: true }) buttonTopTemplate?: TemplateRef<any>;
 
-  @Output() import = new EventEmitter<any>();
-  @Output() edit = new EventEmitter<any>();
+  // Using output signals
+  import = output<any>();
+  edit = output<any>();
+  formChanged = output<{field: string, value: any, schema: any}>();
+
+  constructor() {
+    // Effect to handle settings changes
+    effect(() => {
+      const settings = this.settings();
+      if (settings) {
+        if (!settings.title) settings.title = `Danh sách ${settings.objectName}`;
+        this.cacheFields(settings);
+      }
+    });
+    
+    // Effect to handle dataSource changes
+    effect(() => {
+      const dataSource = this.dataSource();
+      if (dataSource) {
+        this.dataSourceSignal.set(new ListData<ObjectType>(dataSource, dataSource.length));
+      }
+    });
+  }
 
   ngOnInit(): void {
-    if (this.settingsSignal().baseService) {
+    const settings = this.settings();
+    if (settings?.baseService) {
       this.loadData();
     }
   }
 
   loadData() {
+    const settings = this.settings();
+    if (!settings) return;
+    
     const gridInfo = new GridInfo();
     gridInfo.page = 1;
-    gridInfo.pageSize = this.settings.pageSetting.pageSize;
+    gridInfo.pageSize = settings.pageSetting.pageSize;
     this._getData(gridInfo);
   }
 
   private _getData(gridInfo: GridInfo) {
+    const settings = this.settings();
+    if (!settings) return;
+    
     this.loading.set(true);
-    const service = <BaseService>this.settings.baseService;
+    const service = <BaseService>settings.baseService;
     gridInfo.fields = this.#cachedFields;
-    if (this.settings.modifyGridInfo) this.settings.modifyGridInfo(gridInfo);
+    if (settings.modifyGridInfo) settings.modifyGridInfo(gridInfo);
     service.getData(gridInfo).subscribe((res) => {
       const listData = new ListData(res.data ?? [], res.total);
-      this.settings.afterGetData(listData).subscribe(() => {
+      settings.afterGetData(listData).subscribe(() => {
         this.dataSourceSignal.set(listData);
         this.loading.set(false);
       });
@@ -128,38 +147,42 @@ export class AeCrudComponent implements OnInit {
   }
 
   handleListEvent(eventData: ListEventData) {
+    const settings = this.settings();
+    
     switch (eventData.eventName) {
       case 'reload':
       case 'sort':
-        if (this.settings?.baseService) {
+        if (settings?.baseService) {
           const listEvent = eventData.data as ListEvent;
           listEvent.handled = true;
           this._getData(listEvent.data);
         }
         break;
       case 'add':
-        this.selectedRowItem = undefined;
-        this.showForm = true;
+        this.selectedRowItem.set(undefined);
+        this.showForm.set(true);
         break;
       case 'edit':
-        if (this.settings?.onEdit) {
-          this.settings?.onEdit(eventData);
+        if (settings?.onEdit) {
+          settings?.onEdit(eventData);
           return;
         }
-        if (this.settings?.baseService) {
-          this.selectedRowItem = <ObjectType>eventData.data;
+        if (settings?.baseService) {
+          this.selectedRowItem.set(<ObjectType>eventData.data);
         } else {
-          this.selectedRowItem = <ObjectType>deepClone(eventData.data);
+          this.selectedRowItem.set(<ObjectType>deepClone(eventData.data));
         }
-        this.showForm = true;
+        this.showForm.set(true);
         break;
       case 'delete':
         break;
       case 'import':
-        this.import.emit();
+        this.import.emit(eventData);
         break;
     }
   }
 
-  handleFormEvent() {}
+  handleFormChanged(event: {field: string, value: any, schema: any}) {
+    this.formChanged.emit(event);
+  }
 }

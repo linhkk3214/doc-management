@@ -1,4 +1,4 @@
-<ae-crud (import)="triggerFileInput()">
+<ae-crud [settings]="settings" (import)="triggerFileInput()">
     <!-- Custom toolbar with import progress -->
     <ng-template #buttonTop>
         <div class="flex items-center gap-2">
@@ -45,7 +45,7 @@
                 <p-tabpanels style="height: 100%; overflow: hidden">
                     <p-tabpanel [value]="0">
                         <ae-scrollbar>
-                            <ae-form [schemas]="settings.schemas" [data]="selectedDocument"
+                            <ae-form [schemas]="settings.schemas" [(data)]="selectedDocument"
                                 (changed)="handleFormChanged($event)">
                             </ae-form>
                         </ae-scrollbar>
@@ -59,7 +59,7 @@
                     </p-tabpanel>
                     <p-tabpanel [value]="2">
                         <ae-scrollbar>
-                            <ae-form [schemas]="settingsVanBan.schemas" [data]="selectedVanBan"
+                            <ae-form [schemas]="settingsVanBan.schemas" [data]="selectedVanBan || {}" (dataChange)="selectedVanBan = $event"
                                 (changed)="handleFormChanged($event)">
                             </ae-form>
                         </ae-scrollbar>

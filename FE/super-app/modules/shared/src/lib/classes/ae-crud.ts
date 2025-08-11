@@ -16,12 +16,9 @@ export abstract class AeCrud implements OnInit {
   }
 
   ngOnInit() {
-    this.aeCrud.settings = this.settings;
+    // Input signals are set via template binding, not programmatically
     if (this.settings.baseService) {
       this.settings.paginator = false;
-    } else {
-      if (this.settings.dataSource)
-        this.aeCrud.dataSource = this.settings.dataSource;
     }
   }
 

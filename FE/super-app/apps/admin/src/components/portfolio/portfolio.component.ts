@@ -93,6 +93,10 @@ export class PortfolioComponent extends AeCrud implements OnInit {
   importMessage = signal('');
   activeTab = 0;
 
+  override ngOnInit() {
+    super.ngOnInit();
+  }
+
   constructor() {
     const settings = new CrudListSetting();
     super(settings, {});
@@ -649,14 +653,14 @@ export class PortfolioComponent extends AeCrud implements OnInit {
     }
   }
 
-  handleFormChanged(schema: IFormField) {
-    if (schema.field == 'isVinhVien') {
+  handleFormChanged(event: {field: string, value: any, schema: IFormField}) {
+    if (event.field == 'isVinhVien') {
       const schemaRetentionPeriod = this.settings.schemas.find(
         (q) => q.field == 'retentionPeriod'
       );
       if (schemaRetentionPeriod)
         schemaRetentionPeriod.disabled =
-          this.selectedDocument && this.selectedDocument[schema.field] == true;
+          this.selectedDocument && this.selectedDocument[event.field] == true;
       this.cdr.detectChanges();
     }
   }

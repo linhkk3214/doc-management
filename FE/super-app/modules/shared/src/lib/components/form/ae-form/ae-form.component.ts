@@ -5,12 +5,11 @@ import {
   Component,
   computed,
   effect,
-  EventEmitter,
-  Input,
   input,
   model,
   OnInit,
-  Output,
+  output,
+  signal,
   TemplateRef,
   ViewChild,
 } from '@angular/core';
@@ -56,9 +55,14 @@ export class AeFormComponent implements OnInit, AfterViewInit {
   templateBaseControl!: TemplateRef<any>;
   @ViewChild('combobox', { static: true }) templateCombobox!: TemplateRef<any>;
   @ViewChild('datetime', { static: true }) templateDatetime!: TemplateRef<any>;
-  @Input() compactLayout = true;
+  
+  // Unified data management using signals
+  compactLayout = input<boolean>(true);
   schemas = input<IFormField[]>();
-  schemasValComputed = computed(() => {
+  data = model<ObjectType>({});
+  
+  // Computed values
+  schemasComputed = computed(() => {
     const schemasVal = this.schemas();
     if (schemasVal) {
       this.processSchema(schemasVal, undefined);
@@ -66,22 +70,21 @@ export class AeFormComponent implements OnInit, AfterViewInit {
     }
     return [];
   });
-  _oldData: ObjectType | undefined;
-  data = model<ObjectType | undefined>({});
-  modelComputed = computed(() => {
-    const model = this.data();
-    if (!model) return {};
-    return model;
-  });
+  
+  // Unified model access
   get modelValue() {
-    return this.modelComputed();
+    return this.data();
   }
-
-  @Output() changed = new EventEmitter<any>();
+  
+  // Events using output signals
+  changed = output<{field: string, value: any, schema: IFormField}>();
+  
+  // Internal state
+  private _oldData = signal<ObjectType>({});
 
   constructor() {
     effect(() => {
-      this._oldData = this.data();
+      this._oldData.set(this.data());
     });
   }
 
@@ -159,12 +162,32 @@ export class AeFormComponent implements OnInit, AfterViewInit {
   }
 
   handleChanged(field: string) {
-    if (this._oldData && this._oldData[field] != this.modelValue[field]) {
-      //this._dirty = true;
+    const oldData = this._oldData();
+    const currentValue = this.modelValue[field];
+    if (oldData && oldData[field] !== currentValue) {
+      // Find the schema for this field
+      const schema = this.findSchemaByField(field);
+      if (schema) {
+        this.changed.emit({
+          field: field,
+          value: currentValue,
+          schema: schema
+        });
+      }
     }
   }
 
   emitEvent(eventName: string, schema: IFormField) {
-    this.changed.emit(schema);
+    const currentValue = this.modelValue[schema.field];
+    this.changed.emit({
+      field: schema.field,
+      value: currentValue,
+      schema: schema
+    });
+  }
+
+  private findSchemaByField(field: string): IFormField | undefined {
+    const schemas = this.schemas();
+    return schemas?.find(schema => schema.field === field);
   }
 }
