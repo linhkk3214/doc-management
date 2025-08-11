@@ -23,6 +23,10 @@
 <ng-template #numericBox let-schema let-model="model">
     <p-inputnumber [(ngModel)]="model[schema.field]" mode="decimal" class="w-full h-full"
         [disabled]="schema.disabled"></p-inputnumber>
+    @if (schema.suffix)
+    {
+    <span>{{schema.suffix}}</span>
+    }
 </ng-template>
 <ng-template #checkbox let-schema let-model="model">
     <div class="w-full flex gap-2 pt-2">

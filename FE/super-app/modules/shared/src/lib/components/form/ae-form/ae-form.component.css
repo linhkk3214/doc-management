@@ -71,5 +71,9 @@ ng-scrollbar {
             @apply pt-5 rounded-md;
             border: 1px solid var(--p-inputtext-border-color);
         }
+
+        &[data-type="7"] {
+            @apply flex items-center gap-1;
+        }
     }
 }
