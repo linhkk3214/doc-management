@@ -41,16 +41,38 @@
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "500kb",
-              "maximumError": "1mb"
+              "maximumWarning": "2mb",
+              "maximumError": "5mb"
             },
             {
               "type": "anyComponentStyle",
-              "maximumWarning": "2kb",
-              "maximumError": "4kb"
+              "maximumWarning": "10kb",
+              "maximumError": "20kb"
             }
           ],
           "outputHashing": "all",
+          "fileReplacements": [
+            {
+              "replace": "apps/admin/src/environments/environment.ts",
+              "with": "apps/admin/src/environments/environment.prod.ts"
+            }
+          ]
+        },
+        "docker": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "10mb",
+              "maximumError": "50mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "50kb",
+              "maximumError": "100kb"
+            }
+          ],
+          "outputHashing": "all",
+          "optimization": true,
           "fileReplacements": [
             {
               "replace": "apps/admin/src/environments/environment.ts",

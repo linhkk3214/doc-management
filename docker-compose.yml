@@ -20,7 +20,41 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      - doc-management-network
+
+  backend:
+    image: dockerhub.ospgroup.vn/osp-public/sohoa-app-be:latest
+    container_name: doc-management-backend
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=DocManagement;Username=postgres;Password=123456a@A
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - doc-management-network
+
+  frontend:
+    image: dockerhub.ospgroup.vn/osp-public/sohoa-app-fe:latest
+    container_name: doc-management-frontend
+    ports:
+      - "4200:80"
+    environment:
+      - API_URL=http://backend:80
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - doc-management-network
 
 volumes:
   postgres_data:
     driver: local
+
+networks:
+  doc-management-network:
+    driver: bridge
