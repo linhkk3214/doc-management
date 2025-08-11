@@ -4,6 +4,7 @@ import {
   ChangeDetectorRef,
   Component,
   inject,
+  OnDestroy,
   OnInit,
   signal,
   ViewChild,
@@ -28,9 +29,10 @@ import {
   Filter,
   FilterOperator,
   Sort,
+  EventBusService,
 } from '@super-app/shared';
 import { PortfolioService } from '../../services/portfolio.service';
-import { finalize, of, zip } from 'rxjs';
+import { finalize, of, Subscription, zip } from 'rxjs';
 import {
   AeListComponent,
   ListEventData,
@@ -40,7 +42,6 @@ import { DMNhiemKyService } from '../../services/dm-nhiemky.service';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { PdfViewerHoSoComponent } from '../pdf-viewer-hoso/pdf-viewer-hoso.component';
-import { CheckRenderedComponent } from 'modules/shared/src/lib/components/check-rendered/check-rendered.component';
 import { AeMessageService } from 'modules/shared/src/lib/services/ae-message.service';
 import { ExcelImportService } from '../../services/excel-import.service';
 import { ProgressBarModule } from 'primeng/progressbar';
@@ -69,7 +70,7 @@ import { DocumentTypeService } from '../../services/document-type.service';
   styleUrls: ['./portfolio.component.scss'],
   providers: [DecimalPipe],
 })
-export class PortfolioComponent extends AeCrud implements OnInit {
+export class PortfolioComponent extends AeCrud implements OnInit, OnDestroy {
   showImportDialog = false;
   showFileViewDialog = false;
   selectedDocument?: ObjectType;
@@ -82,6 +83,8 @@ export class PortfolioComponent extends AeCrud implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   messageService = inject(AeMessageService);
   excelImportService = inject(ExcelImportService);
+  private eventBusService = inject(EventBusService);
+  private subscriptions: Subscription[] = [];
   vanBanLienQuan = signal<ListData<ObjectType>>({ data: [], total: 0 });
   vanBanLienQuanSettings = signal<CrudListSetting>(new CrudListSetting());
   settingsVanBan = new CrudListSetting();
@@ -309,6 +312,28 @@ export class PortfolioComponent extends AeCrud implements OnInit {
     ];
   }
 
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions when component is destroyed
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions = [];
+  }
+
+  private setupFormEventSubscriptions(): void {
+    // Subscribe to form change events through EventBus
+    const formChangeSubscription = this.eventBusService.on<IFormField>('form.changed')
+      .subscribe((schema) => {
+        this.handleFormChanged(schema);
+      });
+    
+    this.subscriptions.push(formChangeSubscription);
+  }
+
+  private clearFormEventSubscriptions(): void {
+    // Clear subscriptions when closing forms
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions = [];
+  }
+
   handleEditEvent(eventData: ListEventData) {
     eventData.handled = true;
     this.viewFile(eventData.data);
@@ -394,6 +419,9 @@ export class PortfolioComponent extends AeCrud implements OnInit {
       this.selectedDocument = item;
       this.showFileViewDialog = true;
 
+      // Set up form event subscriptions when opening dialog
+      this.setupFormEventSubscriptions();
+
       // Manually trigger change detection
       this.cdr.detectChanges();
     });
@@ -414,6 +442,9 @@ export class PortfolioComponent extends AeCrud implements OnInit {
     this.activeTab = 0;
     this.selectedVanBan = undefined;
     this.selectedDocument = undefined;
+    
+    // Clear form event subscriptions when closing dialog
+    this.clearFormEventSubscriptions();
   }
 
   downloadFile(rowData: any) {

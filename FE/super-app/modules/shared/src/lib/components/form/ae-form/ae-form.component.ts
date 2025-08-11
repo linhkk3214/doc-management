@@ -6,6 +6,7 @@ import {
   computed,
   effect,
   EventEmitter,
+  inject,
   Input,
   input,
   model,
@@ -25,6 +26,7 @@ import { ObjectType } from '../../../classes/model/common';
 import { Container, FormFieldBase } from '../../../classes/model/form-model';
 import { ControlType } from '../../../enum/form';
 import { IFormField } from '../../../interfaces/i-form-model';
+import { EventBusService } from '../../../services/event-bus.service';
 import { AeDropdownComponent } from '../../controls/ae-dropdown/ae-dropdown.component';
 
 @Component({
@@ -47,15 +49,15 @@ import { AeDropdownComponent } from '../../controls/ae-dropdown/ae-dropdown.comp
 })
 export class AeFormComponent implements OnInit, AfterViewInit {
   @ViewChild('container', { static: true })
-  templateContainer!: TemplateRef<any>;
-  @ViewChild('textbox', { static: true }) templateTextbox!: TemplateRef<any>;
+  templateContainer!: TemplateRef<unknown>;
+  @ViewChild('textbox', { static: true }) templateTextbox!: TemplateRef<unknown>;
   @ViewChild('numericBox', { static: true })
-  templateNumericBox!: TemplateRef<any>;
-  @ViewChild('checkbox', { static: true }) templateCheckbox!: TemplateRef<any>;
+  templateNumericBox!: TemplateRef<unknown>;
+  @ViewChild('checkbox', { static: true }) templateCheckbox!: TemplateRef<unknown>;
   @ViewChild('baseControl', { static: true })
-  templateBaseControl!: TemplateRef<any>;
-  @ViewChild('combobox', { static: true }) templateCombobox!: TemplateRef<any>;
-  @ViewChild('datetime', { static: true }) templateDatetime!: TemplateRef<any>;
+  templateBaseControl!: TemplateRef<unknown>;
+  @ViewChild('combobox', { static: true }) templateCombobox!: TemplateRef<unknown>;
+  @ViewChild('datetime', { static: true }) templateDatetime!: TemplateRef<unknown>;
   @Input() compactLayout = true;
   schemas = input<IFormField[]>();
   schemasValComputed = computed(() => {
@@ -77,7 +79,7 @@ export class AeFormComponent implements OnInit, AfterViewInit {
     return this.modelComputed();
   }
 
-  @Output() changed = new EventEmitter<any>();
+  private eventBusService = inject(EventBusService);
 
   constructor() {
     effect(() => {
@@ -95,7 +97,7 @@ export class AeFormComponent implements OnInit, AfterViewInit {
   ) {
     const length = schemasVal.length;
     for (let i = 0; i < length; i++) {
-      const schema = <FormFieldBase>(<any>schemasVal[i]);
+      const schema = schemasVal[i] as FormFieldBase;
       schema.fieldPath =
         parentPath === undefined
           ? schema.field
@@ -154,7 +156,7 @@ export class AeFormComponent implements OnInit, AfterViewInit {
     }
   }
 
-  handleBlur(e: any) {
+  handleBlur(_e: Event) {
     console.log(document.activeElement);
   }
 
@@ -165,6 +167,7 @@ export class AeFormComponent implements OnInit, AfterViewInit {
   }
 
   emitEvent(eventName: string, schema: IFormField) {
-    this.changed.emit(schema);
+    // Use EventBusService for pub/sub mechanism
+    this.eventBusService.emit(`form.${eventName}`, schema, this);
   }
 }
