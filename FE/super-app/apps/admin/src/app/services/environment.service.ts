@@ -28,6 +28,10 @@ export class EnvironmentService {
     return this.env.enableDevTools;
   }
 
+  get useHostBasedApi(): boolean {
+    return this.env.useHostBasedApi ?? false;
+  }
+
   /**
    * Kiểm tra nếu đang ở development mode
    */

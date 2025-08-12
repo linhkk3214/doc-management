@@ -30,8 +30,8 @@ builder.Services.AddIdentityServer(opt =>
   .AddInMemoryIdentityResources(Config.IdentityResources)
   .AddInMemoryApiScopes(Config.ApiScopes)
   .AddInMemoryClients(Config.Clients)
-  .AddTestUsers(TestUsers.Users);
-  //.AddAspNetIdentity<Users>();
+  //.AddTestUsers(TestUsers.Users);
+  .AddAspNetIdentity<Users>();
 
 var app = builder.Build();
 

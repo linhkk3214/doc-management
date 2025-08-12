@@ -16,7 +16,7 @@ import { firstValueFrom } from 'rxjs';
 import { routes } from './app.routes';
 import { BluePreset } from '@super-app/shared';
 import { MessageService } from 'primeng/api';
-import { buildApiUrl, API_CONSTANTS } from './constants/api.constants';
+import { buildApiUrl, API_CONSTANTS, getAuthAuthorityUrl } from './constants/api.constants';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -39,7 +39,7 @@ export const appConfig: ApplicationConfig = {
     }),
     provideAuth({
       config: {
-        authority: 'https://ocr-app-api.csharpp.com',
+        authority: getAuthAuthorityUrl(),
         redirectUrl: window.location.origin,
         postLogoutRedirectUri: window.location.origin + '/public',
         clientId: 'angular-client',

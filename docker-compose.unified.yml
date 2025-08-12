@@ -1,0 +1,112 @@
+version: '3.8'
+
+services:
+  unified-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: unified-doc-management
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      # ASP.NET Core Configuration
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://0.0.0.0:5000
+      
+      # Database Configuration (adjust as needed)
+      - ConnectionStrings__DefaultConnection=Server=db;Database=DocManagement;User Id=sa;Password=YourPassword123!;TrustServerCertificate=true;
+      - ConnectionStrings__AuthConnection=Server=db;Database=DocManagementAuth;User Id=sa;Password=YourPassword123!;TrustServerCertificate=true;
+      
+      # Authentication Configuration
+      - Auth__Authority=http://localhost/api/auth
+      - Auth__RequireHttpsMetadata=false
+      - Auth__ClientId=doc-management-client
+      - Auth__ClientSecret=your-client-secret-here
+      
+      # Logging Configuration
+      - Logging__LogLevel__Default=Information
+      - Logging__LogLevel__Microsoft=Warning
+      - Logging__LogLevel__System=Warning
+      
+    volumes:
+      # Mount volumes for persistent data if needed
+      - app-data:/app/data
+      - app-logs:/var/log/supervisor
+      
+    networks:
+      - doc-management-network
+      
+    restart: unless-stopped
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    depends_on:
+      - db
+      - redis
+
+  # Database service (optional - remove if using external database)
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: unified-doc-management-db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourPassword123!
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - db-data:/var/opt/mssql
+    networks:
+      - doc-management-network
+    restart: unless-stopped
+
+  # Redis service (optional - for caching/session storage)
+  redis:
+    image: redis:7-alpine
+    container_name: unified-doc-management-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - doc-management-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  # Optional: Monitoring with Portainer
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: unified-doc-management-portainer
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer-data:/data
+    networks:
+      - doc-management-network
+    restart: unless-stopped
+
+volumes:
+  app-data:
+    driver: local
+  app-logs:
+    driver: local
+  db-data:
+    driver: local
+  redis-data:
+    driver: local
+  portainer-data:
+    driver: local
+
+networks:
+  doc-management-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
